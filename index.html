@@ -1,1266 +1,1534 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive Transplant Operational Dashboard - An-Najah Hospital</title>
-    <style>
-        /* 100% Offline-Embedded Design Architecture - Safe against institutional firewalls */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f1f5f9;
-            color: #334155;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-        header {
-            background-color: #003366;
-            color: white;
-            padding: 15px 20px;
-            border-bottom: 4px solid #f59e0b;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            width: 100%;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .logo-circle {
-            background-color: white;
-            color: #003366;
-            font-weight: bold;
-            font-size: 20px;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .brand-text h1 {
-            margin: 0;
-            font-size: 18px;
-            letter-spacing: 0.5px;
-        }
-        .brand-text p {
-            margin: 0;
-            font-size: 11px;
-            color: #cbd5e1;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .tracker-box {
-            background-color: #002244;
-            padding: 10px 20px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .progress-wrapper {
-            text-align: center;
-        }
-        .progress-title {
-            font-size: 10px;
-            color: #94a3b8;
-            text-transform: uppercase;
-            font-weight: bold;
-            display: block;
-            margin-bottom: 2px;
-        }
-        #completion-badge {
-            color: #fbbf24;
-            font-size: 18px;
-            font-weight: 900;
-        }
-        .bar-bg {
-            width: 120px;
-            background-color: #475569;
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        #completion-bar {
-            height: 100%;
-            background-color: #10b981;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .main-layout {
-            max-width: 1400px;
-            margin: 20px auto;
-            padding: 0 20px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        @media (min-width: 1024px) {
-            .main-layout {
-                grid-template-columns: 320px 1fr;
-            }
-        }
-        aside {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .card {
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .card-title {
-            font-size: 11px;
-            font-weight: bold;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-top: 0;
-            margin-bottom: 12px;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 5px;
-            letter-spacing: 0.5px;
-        }
-        .input-group {
-            margin-bottom: 10px;
-        }
-        .input-group label {
-            display: block;
-            font-size: 11px;
-            color: #64748b;
-            margin-bottom: 4px;
-            font-weight: 500;
-        }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 7px 10px;
-            background-color: #f8fafc;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 12px;
-            color: #1e293b;
-            box-sizing: border-box;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .filter-btn {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 8px;
-            border: none;
-            background: none;
-            text-align: left;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 4px;
-            transition: all 0.2s;
-        }
-        .filter-btn:hover {
-            background-color: #f1f5f9;
-        }
-        .filter-btn.active {
-            background-color: #e0f2fe;
-            color: #0369a1;
-        }
-        .badge {
-            background-color: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-        .filter-btn.active .badge {
-            background-color: #bae6fd;
-        }
-        .timer-card {
-            background-color: #0f172a;
-            color: white;
-        }
-        .timer-display {
-            font-family: monospace;
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            background-color: #020617;
-            padding: 10px;
-            border-radius: 8px;
-            margin: 8px 0;
-            letter-spacing: 1px;
-            color: #34d399;
-        }
-        .timer-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .btn {
-            padding: 8px;
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            color: white;
-            font-size: 11px;
-            text-align: center;
-            text-transform: uppercase;
-        }
-        .btn-start { background-color: #059669; }
-        .btn-start:hover { background-color: #10b981; }
-        .btn-stop { background-color: #dc2626; }
-        .btn-stop:hover { background-color: #ef4444; }
-        
-        main {
-            background-color: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .section-header {
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
-            margin-top: 35px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-header:first-of-type { margin-top: 0; }
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #003366;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .section-focus {
-            font-size: 11.5px;
-            color: #475569;
-            margin: -10px 0 15px 0;
-            font-weight: 500;
-            background-color: #f8fafc;
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: 1px dashed #cbd5e1;
-        }
-        .section-tag {
-            color: white;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 3px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-        .phase-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #1e293b;
-            margin: 20px 0 10px 0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: #f1f5f9;
-            padding: 6px 10px;
-            border-left: 4px solid #475569;
-            border-radius: 0 4px 4px 0;
-        }
-        
-        /* Department Tags Backing Colors */
-        .tag-coord { background-color: #0284c7; }
-        .tag-nephrology { background-color: #059669; }
-        .tag-donor { background-color: #d97706; }
-        .tag-surgery { background-color: #2563eb; }
-        .tag-urology { background-color: #7c3aed; }
-        .tag-icu { background-color: #e11d48; }
-        .tag-ref { background-color: #64748b; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Transplant Coordinator Tracker — NNUH Kidney Transplant Program</title>
+<meta name="description" content="Interactive donor and recipient checklist and follow-up tracker for the An-Najah National University Hospital Kidney Transplant Program.">
+<style>
+:root{
+  --navy:#1f3864; --blue:#2e5c8a; --light:#eaf0f7; --band:#f5f8fc;
+  --ink:#16202e; --muted:#5c6b7f; --line:#d6dfea; --bg:#f2f5f9; --card:#fff;
+  --ok:#1e7a44; --ok-bg:#e4f4ea; --warn:#8a5a00; --warn-bg:#fdf1d8;
+  --bad:#a32020; --bad-bg:#fbe6e4; --na:#6b7684; --na-bg:#eceff3;
+  --radius:10px; --shadow:0 1px 2px rgba(20,35,60,.06),0 2px 8px rgba(20,35,60,.05);
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  color:var(--ink); background:var(--bg); -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{margin:0;font-weight:650;letter-spacing:-.01em}
+p{margin:0}
+button{font:inherit;cursor:pointer}
+input{font:inherit;color:inherit}
 
-        .checkbox-item {
-            display: flex;
-            align-items: flex-start;
-            padding: 12px 14px;
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.15s ease;
-        }
-        .checkbox-item:hover { 
-            background-color: #f1f5f9; 
-            border-color: #cbd5e1;
-        }
-        .checkbox-item.checked-row {
-            background-color: #f0fdf4;
-            border-color: #bbf7d0;
-        }
-        .checkbox-item input[type="checkbox"] {
-            margin-top: 3px;
-            margin-right: 14px;
-            width: 17px;
-            height: 17px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-        .item-text {
-            flex-grow: 1;
-        }
-        .font-title {
-            display: block;
-            font-weight: 700;
-            font-size: 13px;
-            color: #1e293b;
-        }
-        .font-desc {
-            display: block;
-            font-size: 12px;
-            color: #475569;
-            margin-top: 3px;
-            line-height: 1.4;
-        }
-        .nested-box {
-            margin-top: 8px;
-            padding-left: 10px;
-            border-left: 2px dashed #cbd5e1;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-        .tip-box {
-            background-color: #fffde7;
-            border-left: 4px solid #eab308;
-            padding: 10px 12px;
-            margin: 10px 0;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #713f12;
-            font-weight: 500;
-        }
-        .info-box {
-            background-color: #eff6ff;
-            border-left: 4px solid #3b82f6;
-            padding: 10px 12px;
-            margin: 10px 0;
-            border-radius: 4px;
-            font-size: 12px;
-            color: #1e40af;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 12px 0 20px 0;
-            font-size: 12px;
-        }
-        table, th, td { border: 1px solid #e2e8f0; }
-        th { background-color: #f8fafc; padding: 8px 10px; text-align: left; font-weight: 700; color: #1e293b; }
-        td { padding: 8px 10px; vertical-align: top; }
-        
-        .sign-off-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 12px;
-            margin-top: 35px;
-            border-top: 2px solid #e2e8f0;
-            padding-top: 20px;
-        }
-        @media (min-width: 768px) {
-            .sign-off-grid { grid-template-columns: 1fr 1fr; }
-        }
-        .sign-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            padding: 12px;
-            border-radius: 8px;
-        }
-        .sign-card label {
-            display: block;
-            font-size: 12px;
-            font-weight: bold;
-            color: #003366;
-            margin-bottom: 6px;
-        }
-        .sign-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
-        .sign-inputs input {
-            padding: 6px 10px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            font-size: 11px;
-            background: white;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .hidden { display: none !important; }
-        
-        ul { margin: 5px 0; padding-left: 20px; font-size: 12px; color: #475569; }
-        li { margin-bottom: 4px; }
-    </style>
+/* ---------- app bar ---------- */
+.appbar{position:sticky;top:0;z-index:60;background:var(--navy);color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.15)}
+.appbar-in{max-width:1240px;margin:0 auto;padding:12px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;line-height:1.25;margin-right:auto}
+.brand strong{font-size:16px;font-weight:650}
+.brand span{font-size:12px;color:#b9c8de}
+.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{
+  border:1px solid transparent;border-radius:8px;padding:7px 13px;font-size:13.5px;font-weight:550;
+  background:#fff;color:var(--navy);transition:background .12s,border-color .12s,transform .06s;
+}
+.btn:hover{background:#eef3fa}
+.btn:active{transform:translateY(1px)}
+.btn-ghost{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.32)}
+.btn-ghost:hover{background:rgba(255,255,255,.2)}
+.savestate{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.savestate.saved{background:rgba(255,255,255,.14);color:#cfe3d4}
+.savestate.unsaved{background:#ffd8a8;color:#7a4a00}
+
+.chips{max-width:1240px;margin:0 auto;padding:0 20px 10px;display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:flex;gap:7px;align-items:baseline;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 12px;font-size:12.5px;color:#e6eef8}
+.chip strong{font-size:13.5px}
+.chip.ok strong{color:#a8e6bf}.chip.warn strong{color:#ffd89a}.chip.bad strong{color:#ffb3ac}
+.chip-l{color:#b9c8de}
+
+/* ---------- tabs ---------- */
+.tabs{background:var(--blue);position:sticky;top:0;z-index:55}
+.tabs-in{max-width:1240px;margin:0 auto;padding:0 12px;display:flex;gap:2px;overflow-x:auto}
+.tab{background:none;border:0;color:#d8e5f3;padding:11px 15px;font-size:13.5px;font-weight:550;
+  border-bottom:3px solid transparent;white-space:nowrap}
+.tab:hover{color:#fff;background:rgba(255,255,255,.07)}
+.tab.active{color:#fff;border-bottom-color:#fff;background:rgba(255,255,255,.1)}
+
+/* ---------- layout ---------- */
+main{max-width:1240px;margin:0 auto;padding:20px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+.card h2{font-size:17px;color:var(--navy)}
+.card .sub{font-size:13px;color:var(--muted);margin-top:3px}
+.sticky-head{position:sticky;top:44px;z-index:40}
+.group{padding:0;overflow:hidden}
+.group-title{font-size:13px;font-weight:650;color:#fff;background:var(--blue);padding:9px 16px;letter-spacing:.01em}
+
+/* ---------- forms ---------- */
+.form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field>span{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.field input{border:1px solid var(--line);border-radius:7px;padding:7px 9px;background:#fff;min-width:0}
+.field input:focus{outline:2px solid var(--blue);outline-offset:-1px;border-color:var(--blue)}
+.field.small>span{font-size:10.5px}
+.field.small input{padding:5px 8px;font-size:13px}
+.field.grow{flex:1 1 200px}
+.warn-input{border-color:#e0a63c!important;background:#fffaf0}
+
+.toolbar{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:14px}
+.search{flex:1 1 240px;border:1px solid var(--line);border-radius:7px;padding:7px 11px}
+.search:focus{outline:2px solid var(--blue);outline-offset:-1px}
+.segmented{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fff}
+.seg-btn{border:0;background:#fff;padding:7px 13px;font-size:13px;color:var(--muted);border-right:1px solid var(--line)}
+.seg-btn:last-child{border-right:0}
+.seg-btn.on{background:var(--navy);color:#fff;font-weight:600}
+.seg-btn:hover:not(.on){background:var(--light)}
+
+/* ---------- progress ---------- */
+.big-pct{font-size:38px;font-weight:700;color:var(--navy);line-height:1.1;margin:10px 0 6px}
+.bar{display:flex;height:9px;border-radius:5px;overflow:hidden;background:var(--na-bg);margin:10px 0}
+.seg{height:100%}
+.seg-complete{background:var(--ok)}
+.seg-pending{background:#e0a63c}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+.stat{display:flex;flex-direction:column;background:var(--band);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.stat strong{font-size:19px;line-height:1.1}
+.stat span{font-size:11px;color:var(--muted);margin-top:2px}
+.inline-stats{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:10px;align-items:center}
+.inline-stats strong{color:var(--ink);font-size:14px}
+.ok{color:var(--ok)}.warn{color:var(--warn)}.bad{color:var(--bad)}.muted{color:var(--na)}
+.ready{border-radius:8px;padding:9px 12px;font-weight:650;font-size:13.5px;text-align:center;margin-bottom:12px}
+.ready-yes{background:var(--ok-bg);color:var(--ok)}
+.ready-no{background:var(--bad-bg);color:var(--bad)}
+.ready-inline{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+.ready-inline.ready-yes{background:var(--ok-bg);color:var(--ok)}
+.ready-inline.ready-no{background:var(--bad-bg);color:var(--bad)}
+.btn-quiet{border-color:var(--line);width:100%;color:var(--blue)}
+
+/* ---------- items ---------- */
+.item{display:grid;grid-template-columns:1fr auto;gap:10px 16px;padding:12px 16px;border-top:1px solid var(--line);align-items:start}
+.group .item:first-of-type{border-top:0}
+.item.s-complete{background:linear-gradient(90deg,var(--ok-bg) 0 3px,#fff 3px)}
+.item.s-pending{background:linear-gradient(90deg,#e0a63c 0 3px,#fff 3px)}
+.item.s-todo{background:linear-gradient(90deg,var(--bad) 0 3px,#fff 3px)}
+.item.s-na{background:linear-gradient(90deg,var(--na) 0 3px,#fafbfc 3px);opacity:.72}
+.item.v-attended{background:linear-gradient(90deg,var(--ok) 0 3px,#fff 3px)}
+.item.v-overdue{background:linear-gradient(90deg,var(--bad) 0 3px,#fff 3px)}
+.item.v-due{background:linear-gradient(90deg,#e0a63c 0 3px,#fff 3px)}
+.item.v-scheduled,.item.v-unset{background:#fff}
+.item.is-gate .item-title{font-weight:650;color:var(--navy)}
+.item-main{min-width:0}
+.item-title{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:14px}
+.item-meta{display:flex;gap:10px;align-items:center;margin-top:5px;flex-wrap:wrap}
+.item-ctl{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;justify-content:flex-end}
+.item-extra{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap}
+.dates{display:flex;gap:8px}
+.tests{font-size:12.5px;color:var(--muted);margin-top:6px;max-width:70ch}
+.ref{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;background:var(--band);
+  border:1px solid var(--line);border-radius:4px;padding:1px 6px}
+.due{font-size:12px;color:var(--muted)}
+.gate-pill{background:var(--navy);color:#fff;font-size:10px;font-weight:700;letter-spacing:.06em;
+  border-radius:4px;padding:2px 6px}
+.na{display:flex;gap:5px;align-items:center;font-size:12.5px;color:var(--muted);padding-bottom:6px;white-space:nowrap}
+.na input{width:15px;height:15px}
+.btn-tick{border-color:var(--line);background:#fff;color:var(--ok);min-width:118px}
+.btn-tick.on{background:var(--ok);border-color:var(--ok);color:#fff}
+
+.badge{font-size:11px;font-weight:650;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.b-complete,.b-attended{background:var(--ok-bg);color:var(--ok)}
+.b-pending,.b-due{background:var(--warn-bg);color:var(--warn)}
+.b-todo,.b-overdue{background:var(--bad-bg);color:var(--bad)}
+.b-na,.b-scheduled,.b-unset{background:var(--na-bg);color:var(--na)}
+
+/* ---------- misc ---------- */
+.gate-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:7px}
+.gate-list li{display:flex;gap:9px;align-items:baseline;font-size:13.5px;padding:8px 11px;
+  background:var(--bad-bg);border-radius:7px}
+.tag{font-size:10.5px;font-weight:700;border-radius:4px;padding:2px 7px;white-space:nowrap}
+.tag-d{background:#dbe7f6;color:#1b4a80}
+.tag-r{background:#e6e0f5;color:#4a327d}
+.ok-note{margin-top:12px;background:var(--ok-bg);color:var(--ok);padding:10px 12px;border-radius:8px;font-weight:600;font-size:13.5px}
+.muted-note{margin-top:12px;color:var(--muted);font-size:13.5px}
+table.grid{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+table.grid th{text-align:left;background:var(--band);color:var(--muted);font-size:11.5px;
+  text-transform:uppercase;letter-spacing:.04em;padding:7px 10px;border-bottom:1px solid var(--line)}
+table.grid td{padding:8px 10px;border-bottom:1px solid var(--line)}
+dl.help{margin:14px 0 0}
+dl.help dt{font-weight:650;color:var(--navy);font-size:13.5px;margin-top:14px}
+dl.help dd{margin:4px 0 0;color:var(--ink);font-size:13.5px;max-width:80ch}
+.keygrid{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,14px);background:var(--navy);color:#fff;
+  padding:11px 18px;border-radius:9px;font-size:13.5px;opacity:0;transition:.25s;z-index:200;box-shadow:0 6px 24px rgba(0,0,0,.22)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.bad{background:var(--bad)}
+.patient-banner{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;padding:12px 20px;
+  display:flex;gap:16px;align-items:baseline;flex-wrap:wrap;position:sticky;top:44px;z-index:50}
+.patient-banner b{font-size:20px;font-weight:750;letter-spacing:-.01em}
+.patient-banner span{color:#dbe6f4;font-size:14px}
+#caseActions{align-items:center}
+.case-actions.off{display:none}
+.case-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.case-actions .btn{background-color:#fff!important;color:var(--navy)!important}
+.case-actions .btn.btn-ghost{background-color:rgba(255,255,255,.16)!important;color:#fff!important}
+
+/* ---------- registry / cloud ---------- */
+.cloud-pill{font-size:12px;padding:4px 10px;border-radius:20px;font-weight:600;white-space:nowrap}
+.cloud-pill.on{background:rgba(255,255,255,.14);color:#cfe3d4}
+.cloud-pill.off{background:#ffd8a8;color:#7a4a00}
+.cloud-pill.busy{background:rgba(255,255,255,.14);color:#e6eef8}
+.reg-hero{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-radius:var(--radius);
+  padding:24px 26px;box-shadow:var(--shadow)}
+.reg-hero h2{color:#fff;font-size:20px}
+.reg-hero p{color:#dbe6f4;margin-top:5px;font-size:13.5px;max-width:70ch}
+.case-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.case-row{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;
+  background:#fff;border:1px solid var(--line);border-radius:9px;padding:12px 14px;cursor:pointer;transition:border-color .12s,box-shadow .12s}
+.case-row:hover{border-color:var(--blue);box-shadow:0 2px 10px rgba(30,60,100,.08)}
+.case-row .who{display:flex;flex-direction:column;gap:2px}
+.case-row .who b{font-size:14px;color:var(--ink)}
+.case-row .who span{font-size:12px;color:var(--muted)}
+.case-row .mrns{font-size:12px;color:var(--muted);text-align:right}
+.case-row .upd{font-size:11px;color:var(--na);white-space:nowrap}
+.empty-state{padding:20px;text-align:center;color:var(--muted);font-size:13.5px}
+.patient-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.patient-head h2{font-size:19px}
+.sheet-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+.sheet-tile{border:1px solid var(--line);background:#fff;border-radius:9px;padding:14px 14px;text-align:left}
+.sheet-tile:hover{border-color:var(--blue);background:var(--light)}
+.sheet-tile b{display:block;font-size:14px;color:var(--navy);margin-bottom:4px}
+.sheet-tile span{font-size:12px;color:var(--muted)}
+.sheet-tile .pct{float:right;font-weight:700;color:var(--navy)}
+@media(max-width:900px){.sheet-tiles{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.sheet-tiles{grid-template-columns:1fr}}
+
+/* ---------- modal ---------- */
+.modal-back{position:fixed;inset:0;background:rgba(15,25,40,.5);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:#fff;border-radius:12px;max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:22px 24px;box-shadow:0 12px 40px rgba(0,0,0,.3)}
+.modal h2{font-size:17px;color:var(--navy)}
+.modal .sub{font-size:12.5px;color:var(--muted);margin-top:4px}
+.modal .form-grid{grid-template-columns:1fr}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+.pending-toggle{border:1px solid var(--line);background:#fff;color:var(--warn);border-radius:7px;padding:6px 10px;font-size:12.5px;font-weight:600;min-width:96px}
+.pending-toggle.on{background:var(--warn-bg);border-color:#e0a63c}
+.reminder-preview{background:var(--band);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:12.5px;max-height:220px;overflow:auto;white-space:pre-wrap}
+
+@media(max-width:900px){
+  .two-col{grid-template-columns:1fr}
+  .form-grid{grid-template-columns:1fr 1fr}
+  .item{grid-template-columns:1fr}
+  .item-ctl{justify-content:flex-start}
+  .sticky-head{position:static}
+}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+
+/* ---------- print ---------- */
+@media print{
+  body{background:#fff}
+  .appbar,.tabs,.toolbar,.btn,.na input,.toast,.chips{display:none!important}
+  main{max-width:none;padding:0}
+  .card{border:0;box-shadow:none;padding:0 0 10px;break-inside:auto}
+  .sticky-head{position:static}
+  .item{break-inside:avoid;padding:6px 0;border-top:1px solid #ccc}
+  .group-title{background:#eee!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .badge,.ready,.chip{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .field input{border:0;border-bottom:1px solid #999;border-radius:0}
+  #printAll{display:block!important}
+}
+
+</style>
 </head>
 <body>
-
-    <header>
-        <div class="header-container">
-            <div class="brand">
-                <div class="logo-circle">NU</div>
-                <div class="brand-text">
-                    <h1>AN-NAJAH NATIONAL UNIVERSITY HOSPITAL</h1>
-                    <p>Faculty of Medicine & Health Sciences • Urology · Renal Transplantation Program</p>
-                </div>
-            </div>
-            <div class="tracker-box">
-                <div class="progress-wrapper">
-                    <span class="progress-title">Overall Dashboard Metrics</span>
-                    <span id="completion-badge">0%</span>
-                </div>
-                <div class="bar-bg">
-                    <div id="completion-bar"></div>
-                </div>
-            </div>
-        </div>
-    </header>
-
-    <div class="main-layout">
-        
-        <aside>
-            <div class="card">
-                <h3 class="card-title">Case Matrix Identifiers</h3>
-                <div class="input-group">
-                    <label>Recipient Name:</label>
-                    <input type="text" id="meta-rec-name" placeholder="Enter Recipient Name">
-                </div>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Recipient MRN:</label>
-                        <input type="text" id="meta-rec-mrn" placeholder="MRN">
-                    </div>
-                    <div class="input-group">
-                        <label>ICU Room / Bed:</label>
-                        <input type="text" id="meta-icu-bed" placeholder="Bed No.">
-                    </div>
-                </div>
-                <div class="input-group">
-                    <label>Donor Name:</label>
-                    <input type="text" id="meta-don-name" placeholder="Enter Donor Name">
-                </div>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Donor MRN:</label>
-                        <input type="text" id="meta-don-mrn" placeholder="MRN">
-                    </div>
-                    <div class="input-group">
-                        <label>Surgical Ward:</label>
-                        <input type="text" id="meta-surg-ward" placeholder="Room No.">
-                    </div>
-                </div>
-                <div class="grid-2">
-                    <div class="input-group">
-                        <label>Date of Surgery:</label>
-                        <input type="date" id="meta-surg-date">
-                    </div>
-                    <div class="input-group">
-                        <label>Procedure Type:</label>
-                        <select id="meta-proc-type">
-                            <option value="">Select Option</option>
-                            <option value="related">Living Related</option>
-                            <option value="unrelated">Living Unrelated</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="card-title">Operational Track Filter</h3>
-                <button onclick="filterDept('all')" id="tab-all" class="filter-btn active">
-                    <span>Show All Tracks</span>
-                    <span class="badge" id="count-all">0</span>
-                </button>
-                <button onclick="filterDept('coord')" id="tab-coord" class="filter-btn">
-                    <span>Pre-Incision / Time-Out</span>
-                    <span class="badge" id="count-coord">0</span>
-                </button>
-                <button onclick="filterDept('nephrology')" id="tab-nephrology" class="filter-btn">
-                    <span>1: Transplant Nephrology</span>
-                    <span class="badge" id="count-nephrology">0</span>
-                </button>
-                <button onclick="filterDept('donor')" id="tab-donor" class="filter-btn">
-                    <span>2: Donor Operating Room</span>
-                    <span class="badge" id="count-donor">0</span>
-                </button>
-                <button onclick="filterDept('surgery')" id="tab-surgery" class="filter-btn">
-                    <span>3: Transplant Surgery</span>
-                    <span class="badge" id="count-surgery">0</span>
-                </button>
-                <button onclick="filterDept('urology')" id="tab-urology" class="filter-btn">
-                    <span>4: Urology Reconstruction</span>
-                    <span class="badge" id="count-urology">0</span>
-                </button>
-                <button onclick="filterDept('icu')" id="tab-icu" class="filter-btn">
-                    <span>5: ICU Recipient Recovery</span>
-                    <span class="badge" id="count-icu">0</span>
-                </button>
-                <button onclick="filterDept('ref')" id="tab-ref" class="filter-btn">
-                    <span>Clinical Metrics & Reference</span>
-                    <span class="badge" id="count-ref">0</span>
-                </button>
-            </div>
-
-            <div class="card timer-card">
-                <h3 class="card-title" style="color: #fbbf24; border-color: #1e293b;">Intraoperative WIT Tracker</h3>
-                <div class="timer-display" id="wit-display">00:00</div>
-                <div class="timer-grid">
-                    <button onclick="startWIT()" class="btn btn-start">Clamp Executed</button>
-                    <button onclick="stopWIT()" class="btn btn-stop">Perfusion Flush</button>
-                </div>
-            </div>
-        </aside>
-
-        <main>
-            <div id="checklist-container">
-                
-                <div class="dept-section" data-dept="coord">
-                    <div class="section-header">
-                        <span class="section-tag tag-coord">Pre-Incision</span>
-                        <h2 class="section-title">Pre-Incision Coordination &amp; Combined Time-Out (Both Rooms)</h2>
-                    </div>
-                    <div class="section-focus">Focus: Synchronised workflow across two surgical rooms before incision to minimise ischaemia times.</div>
-                    
-                    <div class="phase-title">1.1 Sign In (Donor Room) — Before Induction of Anaesthesia</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Donor Identity &amp; Consent Verification</span>
-                            <span class="font-desc">Confirm donor identity, signed consent for nephrectomy, and laterality (left vs right) verbally with the donor and against chart documents.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Immunological Parameter Check</span>
-                            <span class="font-desc">ABO compatibility and final cross-match result documented and physically available in both rooms.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Donor Angiography Display</span>
-                            <span class="font-desc">Donor imaging (CT angiography / 3D reconstruction) displayed in the OR: number of renal arteries, veins, ureteral anatomy, and variants flagged.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Laterality Confirmation</span>
-                            <span class="font-desc">Which kidney is being retrieved is confirmed against imaging and marked (left preferred when anatomy is equivalent, due to longer renal vein).</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Anaesthesia &amp; Prophylaxis Review</span>
-                            <span class="font-desc">Anaesthesia machine, airway equipment, and IV access checked; antibiotic prophylaxis timing confirmed.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Thromboprophylaxis Deployment</span>
-                            <span class="font-desc">Sequential compression devices / DVT prophylaxis applied and verified functioning.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Blood Product Reserve</span>
-                            <span class="font-desc">Blood products cross-matched and available per institutional protocol.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Inter-Room Communication Line</span>
-                            <span class="font-desc">Direct communication line established between donor room and recipient room (phone/intercom) confirmed working.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">1.2 Combined Time Out — Before Donor Skin Incision</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Independent Verbal Confirmation</span>
-                            <span class="font-desc">Both operating rooms independently confirm patient identity, procedure, and site/laterality aloud.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Recipient Room Synchronization</span>
-                            <span class="font-desc">Recipient room confirms recipient is ready to be brought back / anaesthesia induction timing coordinated so that cold ischaemia time is minimised.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Dissection Alignment Communication</span>
-                            <span class="font-desc">Estimated donor nephrectomy-to-extraction time communicated to recipient team so iliac dissection can be timed to finish close to graft arrival.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Anatomical Variant Review</span>
-                            <span class="font-desc">Anticipated critical steps, blood loss risk, and any donor-specific anatomical variants reviewed by the donor team.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Recipient Status Briefing</span>
-                            <span class="font-desc">Recipient team confirms dialysis access status, last dialysis session, and volume status.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Immunosuppression Induction Sync</span>
-                            <span class="font-desc">Immunosuppression induction agent given/timed per protocol in recipient room.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Back-Table Verification</span>
-                            <span class="font-desc">Back-table set up, ice slush, preservation solution (HTK, UW, etc.), and instrument tray confirmed present and sterile.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="nephrology">
-                    <div class="section-header">
-                        <span class="section-tag tag-nephrology">Section 1</span>
-                        <h2 class="section-title">TRANSPLANT NEPHROLOGY CHECKLIST</h2>
-                    </div>
-                    <div class="section-focus">Focus: Pre-op optimization, immunological final verification, and medical management.</div>
-                    
-                    <div class="phase-title">Phase A: Pre-Operative Assessment &amp; Clearances</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Immunological Final Sign-Off</span>
-                            <span class="font-desc">Review and document the final Stat Cross-Match (CDC and Flow Cytometry) result. Must be negative.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">ABO Group Double-Check</span>
-                            <span class="font-desc">Re-verify and doublecheck ABO blood group compatibility for both donor and recipient against official lab prints.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Dialysis Optimization Review</span>
-                            <span class="font-desc">Review status of final pre-transplant dialysis session (Target: minimal fluid overload, normal serum Potassium &lt; 5.0 mEq/L).</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Baseline Laboratory Panel Review</span>
-                            <span class="font-desc">Verify today's CBC, Coagulation Profile (PT/INR, PTT), Electrolytes, and Urea/Creatinine levels.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">Phase B: Induction Immunosuppression Delivery</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Induction Agent Verification Protocol</span>
-                            <span class="font-desc">Confirm specific agent protocol ordered based on PRA immunological risk:</span>
-                            <div class="nested-box">
-                                <label onclick="event.stopPropagation()" style="display:flex; align-items:center; font-size:11.5px; color:#475569;"><input type="checkbox" onchange="updateProgress()" class="chk-box-sub" style="margin-right:8px; width:14px; height:14px;"> Basiliximab (IL-2 Receptor Antagonist): Verify Dose 1 (20 mg IV) is mixed and ready for delivery.</label>
-                                <label onclick="event.stopPropagation()" style="display:flex; align-items:center; font-size:11.5px; color:#475569;"><input type="checkbox" onchange="updateProgress()" class="chk-box-sub" style="margin-right:8px; width:14px; height:14px;"> Anti-Thymocyte Globulin (ATG): Verify dose calculation based on actual weight, central line access ready, and pre-medications ordered (Steroids/Antihistamines).</label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Intraoperative Corticosteroid Pulse</span>
-                            <span class="font-desc">Confirm Methylprednisolone pulse dose (typically 250mg - 500mg IV) is available for intraoperative administration.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Post-Op Day 1 Maintenance Stock</span>
-                            <span class="font-desc">Verify oral baseline maintenance medications (Tacrolimus/Mycophenolate) are available in the pharmacy for post-op day 1.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="donor">
-                    <div class="section-header">
-                        <span class="section-tag tag-donor">Section 2</span>
-                        <h2 class="section-title">Donor Operating Room: Setup &amp; Stepwise Laparoscopic Nephrectomy</h2>
-                    </div>
-                    <div class="section-focus">Focus: Team roles, lateral setup, and laparoscopic transperitoneal retrieval execution.</div>
-                    
-                    <div class="phase-title">2.1 Donor Room Staff Assignments</div>
-                    <table>
-                        <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
-                        <tbody>
-                            <tr><td><strong>Lead Surgeon</strong></td><td>Renal dissection, vascular control, extraction decision, haemostasis</td></tr>
-                            <tr><td><strong>First Assistant</strong></td><td>Camera/retraction, stapler co-loading, specimen bag positioning</td></tr>
-                            <tr><td><strong>Scrub Nurse/Tech</strong></td><td>Instrument tray, stapler cartridge management, energy device setup</td></tr>
-                            <tr><td><strong>Circulating Nurse</strong></td><td>Counts, positioning aids, communication with recipient room</td></tr>
-                            <tr><td><strong>Anaesthesiology</strong></td><td>Intravascular volume, mild hydration strategy, mannitol/diuretic timing before clamping</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div class="phase-title">2.2 Patient Positioning Protocol</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Modified Lateral Decubitus</span>
-                            <span class="font-desc">Approximately 60–70° with the side of nephrectomy uppermost; kidney bar/bean bag rest at iliac crest level. Table flexed to open space between costal margin and iliac crest.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Arm &amp; Pressure Padding</span>
-                            <span class="font-desc">Axillary roll placed for dependent arm; both arms padded and secured; pressure points padded.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Conversion Table Capability</span>
-                            <span class="font-desc">Confirm table is capable of intraoperative rotation toward supine if conversion to open surgery is required.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">2.3 Instrumentation Set (Donor Room)</div>
-                    <table>
-                        <thead><tr><th>Category</th><th>Items</th></tr></thead>
-                        <tbody>
-                            <tr><td>Access/Optics</td><td>Veress needle/Hasson open access, 3-4 lap ports (3 working + 1 camera), 30° laparoscope, tower</td></tr>
-                            <tr><td>Vascular Control</td><td>Lap vascular stapler with white/grey loads, Hem-o-lok clips (L & M with applier), buldogs backup</td></tr>
-                            <tr><td>Conversion Set</td><td>Open nephrectomy instrument set immediately available inside the room (not on standby elsewhere)</td></tr>
-                            <tr><td>Transfer Station</td><td>Sterile basin with iced saline slush ready at the field for immediate specimen cold immersion</td></tr>
-                        </tbody>
-                    </table>
-                    <div class="tip-box">★ <strong>Vascular Stapler Tip:</strong> Have the vascular stapler loaded and test-fired on the back table before it is needed — fumbling during vessel control is a preventable source of delay.</div>
-
-                    <div class="phase-title">3.1 - 3.4 Stepwise Laparoscopic Dissection Workflow</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Access &amp; Diagnostic Laparoscopy</span>
-                            <span class="font-desc">Establish pneumoperitoneum (12–15 mmHg). Place periumbilical camera port and 2-3 working ports under vision lateral to rectus. Run diagnostic scan.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Colon Mobilisation (White Line of Toldt)</span>
-                            <span class="font-desc">Incise line of Toldt; reflect colon medially to expose Gerota's fascia. Perform splenic flexure mobilisation only as needed to save time. Trace gonadal vein.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Ureter &amp; Lower Pole Isolation</span>
-                            <span class="font-desc">Preserve ureter en bloc with peri-ureteral tissue and gonadal vein to safeguard blood supply. Mobilise lower pole, identifying any lower-pole accessory arteries.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Upper Pole &amp; Hilar Skeletonisation</span>
-                            <span class="font-desc">Left side: divide adrenal vein early. Skeletonise renal artery and vein free of lymphatic/areolar tissue. Reconfirm findings against CT angiography.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">3.6 - 3.8 Vascular Division, Organ Extraction &amp; Closure</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Pre-Clamping Diuresis and Extraction Setup</span>
-                            <span class="font-desc">Confirm kidney is attached only by hilum and ureter. Divide ureter distally with adequate periureteral envelope. Administer IV hydration bolus + mannitol/furosemide.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Vascular Transection Milestone</span>
-                            <span class="font-desc">Divide renal artery first (stapler or multiple Hem-o-loks). Divide renal vein as distally as possible to retain maximal length. <strong>Announce time of artery division aloud (Start of WIT).</strong></span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Entrapment &amp; Cold Immersion</span>
-                            <span class="font-desc">Extract kidney through Pfannenstiel/periumbilical incision via bag without delay. Immerge instantly into iced slush station. <strong>Log Cold Immersion Time (End of WIT).</strong></span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Fossa Inspection &amp; Closure</span>
-                            <span class="font-desc">Inspect renal fossa for hidden venous bleeding at reduced pneumoperitoneum pressure. Close incisions in layers; confirm correct counts.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="surgery">
-                    <div class="section-header">
-                        <span class="section-tag tag-surgery">Section 3</span>
-                        <h2 class="section-title">TRANSPLANT SURGERY &amp; BACK-TABLE CHECKLIST</h2>
-                    </div>
-                    <div class="section-focus">Focus: Allograft flushing, structural preparation, recipient exposure, and vascular anastomosis execution.</div>
-                    
-                    <div class="phase-title">4.1 - 4.3 Back-Table Setup, Organ Prep &amp; Handoff</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Gravity Perfusion Milestone</span>
-                            <span class="font-desc">Flush via renal artery under gentle gravity pressure with pre-cooled preservation solution (UW / HTK) until venous effluent runs completely clear.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Graft Tailoring &amp; Multi-Vessel Strategy</span>
-                            <span class="font-desc">Trim fat conservatively protecting hilar pad and ureteral branches. Assess accessory vessels; execute venous lengthening if managing a right-graft/short vein.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Dual-Room Handoff Verification</span>
-                            <span class="font-desc">Verify signed consent forms in charts. Confirm vessel count, structural anomalies, and transport metrics directly between surgical teams.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">5.1 - 5.3 Recipient Room Setup &amp; Exposure</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Positioning &amp; Bladder Distension</span>
-                            <span class="font-desc">Supine positioning; place Foley catheter. Distend bladder with sterile saline and clamp catheter to facilitate visualization during implantation.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Extraperitoneal Fossa Isolation</span>
-                            <span class="font-desc">Approach fossa via curvilinear lower-quadrant incision. Mobilise external/common iliac artery and vein. <strong>Ligate all peri-iliac lymphatics to avoid lymphoceles.</strong></span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">6.2 - 6.3 Vascular Implantation &amp; Reperfusion</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Veno-Venous Implantation</span>
-                            <span class="font-desc">Execute running end-to-side veno-venous anastomosis (donor renal vein to recipient external iliac vein) using double-armed monofilament fine suture.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Artero-Arterial Implantation</span>
-                            <span class="font-desc">Perform end-to-side arterial anastomosis to external or common iliac artery (favoured over internal iliac by EAU guidelines due to plaque variations). Log CIT and Rewarming/Anast WIT.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Graft Reperfusion Assessment</span>
-                            <span class="font-desc">Optimize hemodynamics with anaesthesia. Release venous clamp first, then arterial. Verify turgor, pink color change, palpable pulse, Doppler signals, and absence of leaks.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="urology">
-                    <div class="section-header">
-                        <span class="section-tag tag-urology">Section 4</span>
-                        <h2 class="section-title">UROLOGY RECONSTRUCTION CHECKLIST</h2>
-                    </div>
-                    <div class="section-focus">Focus: Allograft ureteral preparation, bladder reconstruction, anti-reflux stent deployment, and drainage control.</div>
-                    
-                    <div class="phase-title">Phase A: Pre-Anastomosis Preparation</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Ureteral Viability Assessment</span>
-                            <span class="font-desc">Inspect the extracted donor ureter. Verify excellent micro-vascular blood supply via active adventitial bleeding and ensure there is no twisting or structural kinking.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Bladder Exposure &amp; Distension</span>
-                            <span class="font-desc">Distend the recipient bladder using sterile saline via a Foley catheter to expose the anterior-lateral bladder wall safely.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Stent Configuration Preparation</span>
-                            <span class="font-desc">Confirm the presence of the specified Double-J (DJ) ureteral stent (typically 4.7 French, 14-16 cm) on the sterile field.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">Phase B: Urinary Reconstruction Milestones</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Ureteroneocystostomy Execution</span>
-                            <span class="font-desc">Create the ureter-to-bladder anastomosis using the designated surgical technique (EAU favoured extravesical Lich-Gregoir approach).</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Anti-Reflux Mechanism Tunneling</span>
-                            <span class="font-desc">Incise detrusor muscle without breaching mucosa to construct an adequate submucosal tunnel over the ureter to prevent retrograde urine flow post-operatively.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">DJ Stent Deployment</span>
-                            <span class="font-desc">Complete mucosa-to-mucosa spatulated suturing over the indwelling DJ stent, ensuring appropriate proximal loop placement in renal pelvis and distal loop in bladder.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Watertight Anastomosis Check</span>
-                            <span class="font-desc">Inspect the bladder detrusor closure line line for absolute watertight integrity. Test bladder with fluid to ensure zero leaks.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Deep Surgical Drain Placement</span>
-                            <span class="font-desc">Place a deep Jackson-Pratt (JP) closed suction drain adjacent to the vascular and ureteral anastomosis sites to monitor for early hematoma or urine leak.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="icu">
-                    <div class="section-header">
-                        <span class="section-tag tag-icu">Section 5</span>
-                        <h2 class="section-title">INTENSIVE CARE UNIT (ICU) RECIPIENT RECOVERY</h2>
-                    </div>
-                    <div class="section-focus">Focus: High-acuity reverse isolation, hourly fluid balance synchronization, and hemodynamic perfusion management.</div>
-                    
-                    <div class="phase-title">Phase A: Immediate Bedside Admission &amp; Isolation Barrier</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Dedicated Single Room Protocol</span>
-                            <span class="font-desc">Confirm the recipient is admitted directly into the pre-prepared Single Isolation Room. Verify active isolation signage on the door.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Reverse Isolation Engineering Controls</span>
-                            <span class="font-desc">Verify PPE cart at threshold, restricted visitor logging, and assigned one-to-one nursing staff allocation.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Monitoring Line Attachment</span>
-                            <span class="font-desc">Connect all invasive monitor lines immediately upon transfer: arterial line for continuous blood pressure tracking, CVC for central venous pressure tracking, and Foley line.</span>
-                        </div>
-                    </div>
-
-                    <div class="phase-title">Phase B: Critical Post-Operative Hourly Protocols</div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Hourly Fluid Resuscitation Dynamics</span>
-                            <span class="font-desc">Measure and log Urine Output (UOP) <strong>every 60 minutes</strong>. Administer IV replacement infusions (Normal Saline or 0.45% Saline) hour-by-hour calculated exactly as: <em>Previous Hour UOP + Ordered Baseline Fluid Volume</em> (mL-for-mL replacement).</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Hemodynamic Optimization for Perfusion</span>
-                            <span class="font-desc">Maintain continuous Mean Arterial Pressure (MAP) target at <strong>&ge; 80–85 mmHg</strong> to avoid allograft hypoperfusion. Titrate ordered IV crystalloids or low-dose vasopressors accordingly.</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Surgical Drain Monitoring</span>
-                            <span class="font-desc">Track Jackson-Pratt (JP) drain outputs hourly. Document color and volume; immediately report changes indicating active bleeding or clear high-volume output (suspected urine leak).</span>
-                        </div>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleRow(this, event)">
-                        <input type="checkbox" onchange="updateProgress()" class="chk-box">
-                        <div class="item-text">
-                            <span class="font-title">Emergency Bedside Doppler Ultrasound</span>
-                            <span class="font-desc">Confirm baseline Bedside Doppler Ultrasound of the renal allograft is performed by Radiology within the first 2–4 hours post-arrival to verify patent arterial and venous blood flow.</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="dept-section" data-dept="ref">
-                    <div class="section-header">
-                        <span class="section-tag tag-ref">Reference</span>
-                        <h2 class="section-title">Clinical Metrics, Decision Supports &amp; Troubleshooting Guides</h2>
-                    </div>
-                    <div class="section-focus">Reference data synthesized from EAU Guidelines Update and contemporary comparative series.</div>
-                    
-                    <div class="phase-title">Section 7: Operative Timing Benchmarks</div>
-                    <table>
-                        <thead>
-                            <tr><th>Interval</th><th>Typical Reported Range</th><th>Clinical Significance</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Donor operative time (laparoscopic)</td><td>&asymp;70–185 minutes depending on technique/platform</td><td>Robotic platforms tend to run longer than pure laparoscopy in comparative series.</td></tr>
-                            <tr><td>Donor warm ischaemia (vessel division &rarr; cold immersion)</td><td>Typically well under 5 minutes in efficient manual extractions</td><td>Prolonged donor warm ischaemia is minimised by rehearsed extraction sequence.</td></tr>
-                            <tr><td>Cold ischaemia time (flush &rarr; reperfusion)</td><td>Living donor: under 1–2 hours; Deceased donor: highly variable (13–26+ hours)</td><td>Shorter CIT is generally favourable; living-donor transplants benefit from close room coordination.</td></tr>
-                            <tr><td>Vascular anastomosis / rewarming time</td><td>Historical cohort median &asymp;30 minutes (IQR 24–45)</td><td>Independently associated with delayed graft function — each added minute carries risk.</td></tr>
-                            <tr><td>Estimated blood loss (donor nephrectomy)</td><td>&asymp;50–150 mL in contemporary series</td><td>Higher losses should prompt early conversion consideration.</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div class="phase-title">Section 8: Vascular Anastomosis Decision Support</div>
-                    <table>
-                        <thead>
-                            <tr><th>Scenario</th><th>Typical Challenge</th><th>Technical Adaptation</th></tr>
-                        </thead>
-                        <tbody>
-                            <tr><td>Left donor kidney</td><td>Long renal vein, generally straightforward</td><td>Standard end-to-side veno-venous anastomosis to external iliac vein.</td></tr>
-                            <tr><td>Right donor kidney &mdash; short vein</td><td>Increases tension/kinking risk; higher historical venous complication rates</td><td>Divide vein as distally as possible on donor side; consider gonadal vein patch, cryopreserved allograft, or common iliac venotomy.</td></tr>
-                            <tr><td>Multiple renal arteries</td><td>Risk of segmental ischaemia if a branch is missed</td><td>Ex vivo reconstruction: common ostium/Carrel patch where anatomy allows, or separate sequential anastomoses safeguarding lower pole ureteral branches.</td></tr>
-                            <tr><td>Very short or injured vessels / redo cases</td><td>Inadequate length for tension-free anastomosis</td><td>Interposition graft (cryopreserved vascular allograft or autologous vein) or proximal anastomosis relocations.</td></tr>
-                        </tbody>
-                    </table>
-
-                    <div class="phase-title">Section 9: Troubleshooting Tips &amp; Pitfalls</div>
-                    <ul>
-                        <li><strong>Donor Side:</strong> Reduce pneumoperitoneum pressure before final inspection of the renal fossa—venous oozing is often hidden at 12–15 mmHg. Preserve gonadal vein and periureteral tissue en bloc to safeguard blood supply.</li>
-                        <li><strong>Back Table:</strong> Keep the graft completely immersed in iced slush at all times except during active tailoring steps. Trim hilar fat conservatively to prevent lymphocele risks and protect small vessels.</li>
-                        <li><strong>Recipient Side:</strong> Confirm final graft orientation by provisionally sitting the kidney in the iliac fossa before running the final anastomotic stitches. Notify anaesthesiology before de-clamping so that volume and pressure are optimised at reperfusion to mitigate DGF. Ligate rather than simply cauterise peri-iliac lymphatics to mitigate lymphocele risks.</li>
-                    </ul>
-                </div>
-
-            </div>
-
-            <div class="sign-off-grid">
-                <div class="sign-card">
-                    <label>Transplant Nephrologist Authorization</label>
-                    <div class="sign-inputs">
-                        <input type="text" id="sign-neph-name" placeholder="Physician Name">
-                        <input type="text" id="sign-neph-date" placeholder="Date (DD/MM/YYYY)">
-                    </div>
-                </div>
-                <div class="sign-card">
-                    <label>Transplant Surgeon Clearance</label>
-                    <div class="sign-inputs">
-                        <input type="text" id="sign-surg-name" placeholder="Surgeon Name">
-                        <input type="text" id="sign-surg-date" placeholder="Date (DD/MM/YYYY)">
-                    </div>
-                </div>
-                <div class="sign-card">
-                    <label>Attending Urologist Sign-Off</label>
-                    <div class="sign-inputs">
-                        <input type="text" id="sign-uro-name" placeholder="Urologist Name">
-                        <input type="text" id="sign-uro-date" placeholder="Date (DD/MM/YYYY)">
-                    </div>
-                </div>
-                <div class="sign-card">
-                    <label>ICU Charge Nurse / MD Validation</label>
-                    <div class="sign-inputs">
-                        <input type="text" id="sign-icu-name" placeholder="Validator Name">
-                        <input type="text" id="sign-icu-date" placeholder="Date (DD/MM/YYYY)">
-                    </div>
-                </div>
-            </div>
-        </main>
+<header class="appbar">
+  <div class="appbar-in">
+    <div class="brand">
+      <strong>Transplant Coordinator Tracker</strong>
+      <span>An-Najah National University Hospital &middot; Kidney Transplant Program &middot; Manual v2.1</span>
     </div>
+    <div class="actions">
+      <button class="btn btn-ghost" id="btnBack" style="visibility:hidden">&#8592; Back</button>
+      <button class="btn btn-ghost" id="btnHome">&#8962; Registry</button>
+      <button class="btn btn-ghost" id="btnSwitch">&#128100; View all donors &amp; recipients</button>
+      <span id="saveState" class="cloud-pill off">Cloud not configured</span>
+      <div id="caseActions" class="case-actions off">
+        <button class="btn" id="btnCloudSave">Save to cloud</button>
+        <button class="btn btn-ghost" id="btnExportSheet">Export to Google Sheet</button>
+        <button class="btn btn-ghost" id="btnCsv">Export CSV</button>
+        <button class="btn btn-ghost" id="btnPrint">Print</button>
+      </div>
+      <button class="btn btn-ghost" id="btnRemind">Email reminder</button>
+      <button class="btn btn-ghost" id="btnSettings">Settings</button>
+      <input type="file" id="fileInput" accept="application/json,.json" hidden>
+    </div>
+  </div>
+  <div class="chips" id="headerChips"></div>
+</header>
 
-    <script>
-        // Intraoperative Warm Ischemia Time (WIT) Tracker State Machine
-        let timerInterval = null;
-        let startTime = null;
+<nav class="tabs">
+  <div class="tabs-in">
+      <button class="tab" data-tab="overview">Overview</button>
+      <button class="tab" data-tab="donor">Donor checklist</button>
+      <button class="tab" data-tab="recipient">Recipient checklist</button>
+      <button class="tab" data-tab="rfu">Recipient follow-up</button>
+      <button class="tab" data-tab="dfu">Donor follow-up</button>
+      <button class="tab" data-tab="help">How to use</button>
+  </div>
+</nav>
+<div id="patientBanner" class="patient-banner" style="display:none"></div>
 
-        function startWIT() {
-            if (timerInterval) return;
-            startTime = localStorage.getItem('global_wit_start_time') ? parseInt(localStorage.getItem('global_wit_start_time')) : Date.now();
-            if (!localStorage.getItem('global_wit_start_time')) {
-                localStorage.setItem('global_wit_start_time', startTime);
-            }
-            timerInterval = setInterval(updateTimerDisplay, 1000);
-        }
+<main id="app"></main>
+<div id="modalRoot"></div>
 
-        function stopWIT() {
-            if (!timerInterval) return;
-            clearInterval(timerInterval);
-            timerInterval = null;
-            localStorage.removeItem('global_wit_start_time');
-        }
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+window.__DATA__ = {"donor":[{"group":"A. Referral, Eligibility and Legal Screening"},{"key":"d1","ref":"G1.2","text":"Donor is an adult (≥ 18 years) and mental capacity confirmed","gate":false},{"key":"d2","ref":"G1.2","text":"Relationship to recipient documented (relative to 4th degree) with supporting documents","gate":false},{"key":"d3","ref":"G1.5","text":"Government-issued identification copy on file (donor and recipient)","gate":false},{"key":"d4","ref":"G1.2","text":"Voluntariness confirmed — no payment, brokerage or inducement","gate":false},{"key":"d5","ref":"G2.2","text":"Initial medical history taken (chronic illness, medicines, surgery, obstetric, family history)","gate":false},{"key":"d6","ref":"G2.2","text":"Physical examination completed including BMI","gate":false},{"key":"d7","ref":"G2.2","text":"Blood pressure recorded on at least two separate occasions","gate":false},{"key":"d8","ref":"G2.2","text":"Screening contraindications excluded (diabetes, uncontrolled HTN, kidney disease, malignancy, psychiatric illness)","gate":false},{"group":"B. Laboratory Investigations (§G2.3)"},{"key":"d9","ref":"G2.3","text":"Complete blood count","gate":false},{"key":"d10","ref":"G2.3","text":"Serum creatinine and eGFR — must exceed 90 mL/min/1.73 m²","gate":false},{"key":"d11","ref":"G2.3","text":"Measured GFR or 24-hour creatinine clearance (only if eGFR borderline)","gate":false},{"key":"d12","ref":"G2.3","text":"Liver function tests — AST, ALT, ALP, bilirubin, albumin","gate":false},{"key":"d13","ref":"G2.3","text":"Urinalysis","gate":false},{"key":"d14","ref":"G2.3","text":"Urine culture","gate":false},{"key":"d15","ref":"G2.3","text":"24-hour urine protein — must be < 300 mg/24 h","gate":false},{"key":"d16","ref":"G2.3","text":"Fasting blood glucose","gate":false},{"key":"d17","ref":"G2.3","text":"HbA1c","gate":false},{"key":"d18","ref":"G2.3","text":"Oral glucose tolerance test (only if impaired fasting glucose or strong family history)","gate":false},{"key":"d19","ref":"G2.3","text":"Lipid profile","gate":false},{"key":"d20","ref":"G2.3","text":"Uric acid, calcium and phosphate","gate":false},{"key":"d21","ref":"G2.3","text":"Coagulation screen","gate":false},{"key":"d22","ref":"G2.3","text":"ABO blood group and Rh typing","gate":false},{"key":"d23","ref":"G2.3","text":"HIV serology","gate":false},{"key":"d24","ref":"G2.3","text":"HBsAg and anti-HBc","gate":false},{"key":"d25","ref":"G2.3","text":"Anti-HCV","gate":false},{"key":"d26","ref":"G2.3","text":"CMV IgG  — required to set the recipient's CMV strategy (§G7.4)","gate":false},{"key":"d27","ref":"G2.3","text":"EBV IgG  — required to set EBV surveillance (§G8.3)","gate":false},{"key":"d28","ref":"G2.3","text":"Syphilis serology","gate":false},{"key":"d29","ref":"G2.3","text":"Tuberculosis screening by IGRA","gate":false},{"key":"d30","ref":"G2.3","text":"HLA typing — Class I and II","gate":false},{"key":"d31","ref":"G2.3","text":"Crossmatch — complement-dependent cytotoxicity","gate":false},{"key":"d32","ref":"G2.3","text":"Crossmatch — flow cytometry","gate":false},{"key":"d33","ref":"G2.3","text":"Pregnancy test — women of childbearing potential, within 7 days of surgery","gate":false},{"group":"C. Radiological and Cardiac Evaluation (§G2.4)"},{"key":"d34","ref":"G2.4","text":"CT angiography of the kidneys","gate":false},{"key":"d35","ref":"G2.4","text":"Renal ultrasound","gate":false},{"key":"d36","ref":"G2.4","text":"Chest radiograph","gate":false},{"key":"d37","ref":"G2.4","text":"ECG","gate":false},{"key":"d38","ref":"G2.4","text":"Echocardiogram (donors > 50 years, or hypertension, murmur or symptoms)","gate":false},{"key":"d39","ref":"G2.4","text":"Stress testing or coronary angiography (only if clinically indicated)","gate":false},{"group":"D. Psychosocial and Mental Health Evaluation (§G2.5)"},{"key":"d40","ref":"G2.5","text":"Psychological / psychiatric assessment — depression, anxiety and coercion screen","gate":false},{"key":"d41","ref":"G2.5","text":"Motivation and expectations explored and documented","gate":false},{"key":"d42","ref":"G2.5","text":"Social support for the recovery period confirmed","gate":false},{"key":"d43","ref":"G2.5","text":"Decision-making capacity confirmed — donor explains risks in own words","gate":false},{"key":"d44","ref":"G2.5","text":"Employment, income and insurance counselling documented","gate":false},{"group":"E. Multidisciplinary Team Review (§G2.8)"},{"key":"d45","ref":"G2.8","text":"Transplant nephrologist review — renal risk and projected lifetime ESRD risk documented","gate":false},{"key":"d46","ref":"G2.8","text":"Transplant surgeon review — anatomical feasibility and side of nephrectomy selected","gate":false},{"key":"d47","ref":"G2.8","text":"Transplant coordinator — structured education delivered and documented","gate":false},{"key":"d48","ref":"G2.8","text":"Social worker assessment","gate":false},{"key":"d49","ref":"G2.8","text":"Anaesthetic assessment and ASA classification","gate":false},{"key":"d50","ref":"G2.8","text":"Dietitian review (if indicated)","gate":false},{"group":"F. Consent, Legal and Ethics — MANDATORY GATES (§G1.5, §G2.6, §G2.7)"},{"key":"d51","ref":"G2.6","text":"GATE — Independent Donor Advocate met the donor alone; written opinion filed","gate":true},{"key":"d52","ref":"G2.7","text":"Written informed consent for evaluation (Arabic + English), witnessed","gate":false},{"key":"d53","ref":"G2.7","text":"Written informed consent for surgery (Arabic + English), witnessed","gate":false},{"key":"d54","ref":"G1.2","text":"Right of withdrawal explained verbally and in writing","gate":false},{"key":"d55","ref":"G2.7","text":"Interpreter or legal guardian provided where needed","gate":false},{"key":"d56","ref":"G2.7","text":"Absence of financial incentive confirmed and documented","gate":false},{"key":"d57","ref":"G1.5","text":"Organ donation declaration form (Ministry of Health) completed","gate":false},{"key":"d58","ref":"G2.9","text":"Donor summary report submitted to the Transplant Committee","gate":false},{"key":"d59","ref":"G2.7","text":"GATE — Ethics Committee approval obtained","gate":true},{"key":"d60","ref":"G1.5","text":"GATE — Multidisciplinary Transplant Committee approval minuted","gate":true},{"group":"G. Pre-operative Preparation (§G3.2)"},{"key":"d61","ref":"G3.2","text":"Donor identity confirmed using two identifiers","gate":false},{"key":"d62","ref":"G3.2","text":"Complete evaluation file and BOTH committee approvals verified in the chart","gate":false},{"key":"d63","ref":"G3.2","text":"Blood group and a current negative crossmatch re-confirmed","gate":false},{"key":"d64","ref":"G3.2","text":"Fasting instructions given — 8 h solids, clear fluids to 2 h","gate":false},{"key":"d65","ref":"G3.2","text":"Bowel preparation (only if specified by the operating surgeon)","gate":false},{"key":"d66","ref":"G3.2","text":"Venous access established, hydration commenced, baseline labs taken","gate":false},{"key":"d67","ref":"G7.2","text":"Surgical antibiotic prophylaxis prescribed — cefazolin 2 g IV within 60 min of incision","gate":false},{"key":"d68","ref":"G3.2","text":"VTE risk assessment completed with mechanical prophylaxis applied","gate":false},{"key":"d69","ref":"G3.2","text":"WHO surgical safety checklist and time-out completed","gate":false},{"key":"d70","ref":"G3.2","text":"Operative side independently confirmed against the CT angiogram by two staff members","gate":false},{"key":"d71","ref":"G3.2","text":"Consent re-verified with the donor personally on the day of surgery","gate":false},{"group":"H. Post-operative Care and Discharge (§G3.4, §G3.5)"},{"key":"d72","ref":"G3.4","text":"PACU observations documented and donor cleared for transfer","gate":false},{"key":"d73","ref":"G3.4","text":"Early ambulation achieved within 6–12 hours","gate":false},{"key":"d74","ref":"G3.4","text":"Daily CBC, creatinine and electrolytes until stable and improving","gate":false},{"key":"d75","ref":"G3.5","text":"All seven discharge criteria met and documented","gate":false},{"key":"d76","ref":"G3.5","text":"Discharge education — wound care, warning signs, permanent NSAID avoidance, activity restriction","gate":false},{"key":"d77","ref":"G3.5","text":"24-hour emergency contact details provided in writing","gate":false},{"key":"d78","ref":"G3.7","text":"Operative report completed within 24 hours","gate":false},{"key":"d79","ref":"G3.7","text":"Discharge summary issued and copied to the donor","gate":false},{"key":"d80","ref":"G3.7","text":"Any donor complication reported to Quality & Patient Safety within 24 hours","gate":false},{"key":"d81","ref":"G8.6","text":"GATE — Donor entered on the LIFELONG donor follow-up register","gate":true}],"recipient":[{"group":"A. Referral and Initial Assessment (§G4.2)"},{"key":"r1","ref":"G4.2","text":"Medical history — cause of ESRD, dialysis history, comorbidities, transfusions, pregnancies, prior transplants and rejection","gate":false},{"key":"r2","ref":"G4.2","text":"Physical examination — cardiopulmonary, abdominal, peripheral vascular, dialysis access, BMI","gate":false},{"key":"r3","ref":"G4.2","text":"Functional status and frailty assessment","gate":false},{"key":"r4","ref":"G4.2","text":"Adherence history documented — dialysis attendance, medication, clinic attendance","gate":false},{"key":"r5","ref":"G1.5","text":"Government-issued identification copy on file","gate":false},{"group":"B. Laboratory Tests (§G4.3)"},{"key":"r6","ref":"G4.3","text":"Complete blood count","gate":false},{"key":"r7","ref":"G4.3","text":"Electrolytes, urea and creatinine","gate":false},{"key":"r8","ref":"G4.3","text":"Calcium, phosphate and PTH","gate":false},{"key":"r9","ref":"G4.3","text":"Liver function tests and albumin","gate":false},{"key":"r10","ref":"G4.3","text":"Fasting glucose","gate":false},{"key":"r11","ref":"G4.3","text":"HbA1c","gate":false},{"key":"r12","ref":"G4.3","text":"Lipid profile","gate":false},{"key":"r13","ref":"G4.3","text":"Coagulation screen","gate":false},{"key":"r14","ref":"G4.3","text":"Thrombophilia screen (only if history of access thrombosis)","gate":false},{"key":"r15","ref":"G4.3","text":"HIV serology","gate":false},{"key":"r16","ref":"G4.3","text":"HBsAg, anti-HBs and anti-HBc","gate":false},{"key":"r17","ref":"G4.3","text":"Anti-HCV","gate":false},{"key":"r18","ref":"G4.3","text":"CMV IgG  — required to set the CMV prophylaxis strategy (§G7.4)","gate":false},{"key":"r19","ref":"G4.3","text":"EBV IgG  — required to set EBV surveillance (§G8.3)","gate":false},{"key":"r20","ref":"G4.3","text":"VZV IgG","gate":false},{"key":"r21","ref":"G4.3","text":"Syphilis serology","gate":false},{"key":"r22","ref":"G4.3","text":"Tuberculosis screening by IGRA, with chest radiograph","gate":false},{"key":"r23","ref":"G4.3","text":"ABO blood group and Rh typing","gate":false},{"key":"r24","ref":"G4.3","text":"HLA typing — Class I and II","gate":false},{"key":"r25","ref":"G4.3","text":"Antibody screen and cPRA — sensitisation quantified, unacceptable antigens listed","gate":false},{"key":"r26","ref":"G4.3","text":"Crossmatch — CDC and flow cytometry","gate":false},{"key":"r27","ref":"G4.3","text":"Urinalysis and urine culture (if residual urine output)","gate":false},{"group":"C. Cardiovascular and Pulmonary Assessment (§G4.4)"},{"key":"r28","ref":"G4.4","text":"Chest radiograph","gate":false},{"key":"r29","ref":"G4.4","text":"ECG","gate":false},{"key":"r30","ref":"G4.4","text":"Echocardiogram — EF, valves, pulmonary pressures, LVH","gate":false},{"key":"r31","ref":"G4.4","text":"Non-invasive stress testing (diabetes, age > 50, smoking, known CAD, or ≥ 2 risk factors)","gate":false},{"key":"r32","ref":"G4.4","text":"Coronary angiography (if stress test positive/equivocal or symptoms)","gate":false},{"key":"r33","ref":"G4.4","text":"Pulmonary function tests (significant smoking history or chronic lung disease)","gate":false},{"group":"D. Imaging and Surgical Planning (§G4.5)"},{"key":"r34","ref":"G4.5","text":"Abdominal ultrasound","gate":false},{"key":"r35","ref":"G4.5","text":"Non-contrast CT of abdomen and pelvis — iliac calcification and pelvic anatomy","gate":false},{"key":"r36","ref":"G4.5","text":"Doppler of iliac vessels — anastomosis site planned","gate":false},{"key":"r37","ref":"G4.5","text":"Renal ultrasound of native kidneys","gate":false},{"key":"r38","ref":"G4.5","text":"Urological assessment — urodynamics or VCUG (if bladder dysfunction or long-standing anuria)","gate":false},{"group":"E. Malignancy Screening (§G4.6)"},{"key":"r39","ref":"G4.6","text":"Colonoscopy (age ≥ 50, or earlier with family history or symptoms)","gate":false},{"key":"r40","ref":"G4.6","text":"Cervical cytology — women, per national policy","gate":false},{"key":"r41","ref":"G4.6","text":"Mammography — women ≥ 40 years, or per national policy","gate":false},{"key":"r42","ref":"G4.6","text":"Prostate-specific antigen — men ≥ 50 years, after discussion","gate":false},{"key":"r43","ref":"G4.6","text":"Baseline dermatological examination","gate":false},{"key":"r44","ref":"G4.6","text":"Oncology clearance and waiting period documented (if prior malignancy)","gate":false},{"group":"F. Infection Review and Immunisation (§G4.7, §G7.8)"},{"key":"r45","ref":"G4.7","text":"Latent or active infection identified and treated — TB, hepatitis, access infection, chronic ulcers","gate":false},{"key":"r46","ref":"G4.7","text":"Dental evaluation and formal dental clearance","gate":false},{"key":"r47","ref":"G7.8","text":"Hepatitis B vaccination course complete — anti-HBs titre checked 4–8 weeks after","gate":false},{"key":"r48","ref":"G7.8","text":"Influenza vaccination (inactivated)","gate":false},{"key":"r49","ref":"G7.8","text":"Pneumococcal vaccination","gate":false},{"key":"r50","ref":"G7.8","text":"COVID-19 primary course complete","gate":false},{"key":"r51","ref":"G7.8","text":"Tetanus / diphtheria / pertussis booster","gate":false},{"key":"r52","ref":"G7.8","text":"HPV vaccination (eligible age groups)","gate":false},{"key":"r53","ref":"G7.8","text":"LIVE vaccines given ≥ 4 weeks pre-transplant — MMR, varicella (contraindicated after transplant)","gate":false},{"key":"r54","ref":"G7.8","text":"Recombinant zoster vaccine","gate":false},{"key":"r55","ref":"G7.8","text":"Household contacts and caregivers vaccinated","gate":false},{"key":"r56","ref":"G7.8","text":"Vaccination record entered in the transplant record and copied to the patient","gate":false},{"group":"G. Psychosocial and Financial Evaluation (§G4.8)"},{"key":"r57","ref":"G4.8","text":"Mental health screen — depression, anxiety, cognitive impairment, substance use","gate":false},{"key":"r58","ref":"G4.8","text":"Named caregiver identified for the first three months post-transplant","gate":false},{"key":"r59","ref":"G4.8","text":"Financial coordinator review — sustainable access to immunosuppressants confirmed","gate":false},{"key":"r60","ref":"G4.8","text":"Understanding of lifelong immunosuppression and follow-up confirmed and documented","gate":false},{"key":"r61","ref":"G4.8","text":"Transport and distance feasibility for intensive early follow-up confirmed","gate":false},{"group":"H. Consent and Committee — MANDATORY GATES (§G4.10)"},{"key":"r62","ref":"G4.10","text":"Written informed consent (Arabic + English), signed and witnessed","gate":false},{"key":"r63","ref":"G5.2","text":"Immunological risk category assigned (standard / high / very high) and recorded in the chart","gate":false},{"key":"r64","ref":"G4.10","text":"Written evaluation summary submitted to the Multidisciplinary Transplant Committee","gate":false},{"key":"r65","ref":"G4.10","text":"GATE — Transplant Committee decision minuted (accept / defer / decline)","gate":true},{"key":"r66","ref":"G4.10","text":"Decision communicated to the patient in person and documented","gate":false},{"key":"r67","ref":"G4.10","text":"Annual re-evaluation completed (if waiting longer than 12 months)","gate":false},{"group":"I. Pre-operative Checks"},{"key":"r68","ref":"G4.10","text":"Crossmatch and virology repeated within 14 days of the planned surgery","gate":false},{"key":"r69","ref":"G7.4","text":"GATE — CMV donor/recipient serostatus PAIR documented and prophylaxis strategy chosen","gate":true},{"key":"r70","ref":"G8.3","text":"EBV donor/recipient serostatus PAIR documented (D+/R− triggers EBV DNA surveillance)","gate":false},{"key":"r71","ref":"G5.3","text":"Induction agent prescribed per risk category — basiliximab or anti-thymocyte globulin","gate":false},{"key":"r72","ref":"G5.3","text":"Intra-operative methylprednisolone 500 mg IV prescribed (before reperfusion)","gate":false},{"key":"r73","ref":"G7.2","text":"Surgical antibiotic prophylaxis prescribed — cefazolin 2 g IV within 60 min of incision","gate":false},{"key":"r74","ref":"G3.2","text":"WHO surgical safety checklist and time-out completed","gate":false},{"group":"J. Post-operative and Discharge"},{"key":"r75","ref":"G5.4.1","text":"Tacrolimus commenced and daily trough monitoring started","gate":false},{"key":"r76","ref":"G5.4.2","text":"Mycophenolate prescribed; contraception counselling documented if applicable","gate":false},{"key":"r77","ref":"G5.4.3","text":"Steroid taper prescribed; gastric protection, calcium and vitamin D prescribed","gate":false},{"key":"r78","ref":"G7.3","text":"PJP prophylaxis prescribed — TMP-SMX (or documented alternative if sulfa-allergic)","gate":false},{"key":"r79","ref":"G7.4","text":"CMV prophylaxis or pre-emptive strategy prescribed, renally dose-adjusted","gate":false},{"key":"r80","ref":"G7.5","text":"Antifungal prophylaxis prescribed — nystatin or clotrimazole","gate":false},{"key":"r81","ref":"G7.5","text":"Acyclovir prescribed (only if NOT receiving valganciclovir)","gate":false},{"key":"r82","ref":"G8.3","text":"Allograft Doppler ultrasound performed before discharge","gate":false},{"key":"r83","ref":"G7.2","text":"Ureteric stent removal date booked (2–4 weeks) and recorded","gate":false},{"key":"r84","ref":"G5.8","text":"Medication card issued in Arabic and English","gate":false},{"key":"r85","ref":"G7.9","text":"Patient education — warning signs, food and water safety, infection prevention","gate":false},{"key":"r86","ref":"G8.7","text":"Self-monitoring taught — daily weight, blood pressure, temperature, urine output","gate":false},{"key":"r87","ref":"G8.8","text":"Discharge summary issued with full medication list and drug-level plan","gate":false},{"key":"r88","ref":"G8.7","text":"24-hour emergency contact details provided in writing","gate":false},{"key":"r89","ref":"G8.2","text":"Follow-up appointments booked per the Guideline 8 schedule","gate":false},{"key":"r90","ref":"G8.2","text":"GATE — Patient entered on the follow-up register","gate":true}],"recipVisits":[{"section":"Clinic Visits (§G8.2) — weeks 1–4 require 2–3 visits per week; the rows below are the minimum milestones"},{"key":"rv1","label":"Day 3 after discharge","offset":3,"grace":2,"tests":"Creatinine, electrolytes, magnesium, CBC, glucose, tacrolimus trough; weight, BP, urine output, wound"},{"key":"rv2","label":"Day 7","offset":7,"grace":2,"tests":"As above"},{"key":"rv3","label":"Day 10","offset":10,"grace":2,"tests":"As above"},{"key":"rv4","label":"Day 14","offset":14,"grace":3,"tests":"As above"},{"key":"rv5","label":"Day 21","offset":21,"grace":3,"tests":"As above"},{"key":"rv6","label":"Day 28","offset":28,"grace":3,"tests":"As above; ureteric stent removal due 2–4 weeks (§G7.2)"},{"key":"rv7","label":"Week 6","offset":42,"grace":7,"tests":"As above; add urinalysis and urine protein-to-creatinine ratio"},{"key":"rv8","label":"Week 8","offset":56,"grace":7,"tests":"As above"},{"key":"rv9","label":"Month 3","offset":91,"grace":10,"tests":"Add LFTs, calcium, phosphate, uric acid; DSA; allograft Doppler ultrasound; protocol biopsy if high risk"},{"key":"rv10","label":"Month 4","offset":121,"grace":14,"tests":"Routine panel + tacrolimus trough"},{"key":"rv11","label":"Month 5","offset":152,"grace":14,"tests":"Routine panel + tacrolimus trough"},{"key":"rv12","label":"Month 6","offset":182,"grace":14,"tests":"Add HbA1c and lipid profile; DSA; end of PJP prophylaxis review; CMV surveillance if D+/R−"},{"key":"rv13","label":"Month 8","offset":243,"grace":21,"tests":"Routine panel + tacrolimus trough"},{"key":"rv14","label":"Month 10","offset":304,"grace":21,"tests":"Routine panel + tacrolimus trough"},{"key":"rv15","label":"Month 12","offset":365,"grace":21,"tests":"DSA; UPCR; annual comprehensive review (§G8.5); protocol biopsy if high risk"},{"key":"rv16","label":"Month 15","offset":456,"grace":30,"tests":"Routine panel + tacrolimus trough"},{"key":"rv17","label":"Month 18","offset":547,"grace":30,"tests":"Routine panel + tacrolimus trough"},{"key":"rv18","label":"Month 21","offset":638,"grace":30,"tests":"Routine panel + tacrolimus trough"},{"key":"rv19","label":"Month 24","offset":730,"grace":30,"tests":"DSA (annual); end of BK surveillance; annual comprehensive review"},{"key":"rv20","label":"Month 30","offset":913,"grace":45,"tests":"Routine panel"},{"key":"rv21","label":"Year 3","offset":1095,"grace":45,"tests":"DSA (annual); annual comprehensive review; bone density (2-yearly)"},{"key":"rv22","label":"Year 4","offset":1460,"grace":60,"tests":"DSA (annual); annual comprehensive review"},{"key":"rv23","label":"Year 5","offset":1826,"grace":60,"tests":"DSA (annual); annual comprehensive review; bone density (2-yearly)"},{"key":"rv24","label":"Year 6","offset":2191,"grace":60,"tests":"Annual review — minimum every 6 months for life thereafter"},{"key":"rv25","label":"Year 7","offset":2556,"grace":60,"tests":"Annual review"},{"key":"rv26","label":"Year 8","offset":2922,"grace":60,"tests":"Annual review"},{"key":"rv27","label":"Year 9","offset":3287,"grace":60,"tests":"Annual review"},{"key":"rv28","label":"Year 10","offset":3652,"grace":60,"tests":"Annual review"},{"section":"Scheduled Surveillance Tests (§G8.3) — record the date each is performed"},{"key":"rv29","label":"DSA — month 3","offset":91,"grace":14,"tests":"Donor-specific antibody"},{"key":"rv30","label":"DSA — month 6","offset":182,"grace":14,"tests":"Donor-specific antibody"},{"key":"rv31","label":"DSA — month 12","offset":365,"grace":21,"tests":"Donor-specific antibody, then annually"},{"key":"rv32","label":"BK PCR — month 1","offset":30,"grace":7,"tests":"Plasma BK virus PCR (monthly to month 6)"},{"key":"rv33","label":"BK PCR — month 2","offset":61,"grace":7,"tests":"Plasma BK virus PCR"},{"key":"rv34","label":"BK PCR — month 3","offset":91,"grace":7,"tests":"Plasma BK virus PCR"},{"key":"rv35","label":"BK PCR — month 4","offset":121,"grace":7,"tests":"Plasma BK virus PCR"},{"key":"rv36","label":"BK PCR — month 5","offset":152,"grace":7,"tests":"Plasma BK virus PCR"},{"key":"rv37","label":"BK PCR — month 6","offset":182,"grace":7,"tests":"Plasma BK virus PCR"},{"key":"rv38","label":"BK PCR — month 9","offset":273,"grace":14,"tests":"Plasma BK virus PCR (3-monthly to month 24)"},{"key":"rv39","label":"BK PCR — month 12","offset":365,"grace":14,"tests":"Plasma BK virus PCR"},{"key":"rv40","label":"BK PCR — month 15","offset":456,"grace":14,"tests":"Plasma BK virus PCR"},{"key":"rv41","label":"BK PCR — month 18","offset":547,"grace":14,"tests":"Plasma BK virus PCR"},{"key":"rv42","label":"BK PCR — month 21","offset":638,"grace":14,"tests":"Plasma BK virus PCR"},{"key":"rv43","label":"BK PCR — month 24","offset":730,"grace":14,"tests":"Plasma BK virus PCR — surveillance ends"},{"key":"rv44","label":"CMV — end of prophylaxis review","offset":182,"grace":14,"tests":"D+/R−: stop valganciclovir at 6 months and begin 1–2 weekly PCR for 3 months"},{"key":"rv45","label":"CMV PCR surveillance complete","offset":273,"grace":21,"tests":"D+/R−: 3 months of post-prophylaxis PCR completed"},{"key":"rv46","label":"EBV DNA — if D+/R− only","offset":30,"grace":7,"tests":"Monthly to month 6, then 3-monthly to month 12 (§G8.3)"},{"key":"rv47","label":"UPCR — month 3","offset":91,"grace":14,"tests":"Urine protein-to-creatinine ratio"},{"key":"rv48","label":"UPCR — month 6","offset":182,"grace":14,"tests":"Urine protein-to-creatinine ratio"},{"key":"rv49","label":"UPCR — month 9","offset":273,"grace":14,"tests":"Urine protein-to-creatinine ratio"},{"key":"rv50","label":"UPCR — month 12","offset":365,"grace":14,"tests":"Urine protein-to-creatinine ratio, then annually"},{"key":"rv51","label":"Annual comprehensive review — year 1","offset":365,"grace":30,"tests":"Cardiovascular risk, bone health, cancer screening, vaccination, dental, psychosocial (§G8.5)"},{"key":"rv52","label":"Annual comprehensive review — year 2","offset":730,"grace":30,"tests":"As §G8.5"},{"key":"rv53","label":"Annual comprehensive review — year 3","offset":1095,"grace":30,"tests":"As §G8.5"},{"key":"rv54","label":"Annual comprehensive review — year 4","offset":1460,"grace":30,"tests":"As §G8.5"},{"key":"rv55","label":"Annual comprehensive review — year 5","offset":1826,"grace":30,"tests":"As §G8.5"}],"donorVisits":[{"key":"dv1","label":"3–7 days after discharge","offset":5,"grace":4,"tests":"Wound review, pain, return of function — creatinine, CBC, electrolytes"},{"key":"dv2","label":"1 month","offset":30,"grace":10,"tests":"Recovery, return-to-work planning, psychological wellbeing — creatinine/eGFR, urinalysis, BP"},{"key":"dv3","label":"3 months","offset":91,"grace":14,"tests":"Creatinine/eGFR, UPCR, blood pressure, weight"},{"key":"dv4","label":"6 months","offset":182,"grace":21,"tests":"Creatinine/eGFR, urinalysis, blood pressure"},{"key":"dv5","label":"12 months","offset":365,"grace":30,"tests":"Creatinine/eGFR, UPCR, fasting glucose, lipids, blood pressure, BMI"},{"key":"dv6","label":"Year 2","offset":730,"grace":60,"tests":"Annual: creatinine/eGFR, UPCR, BP, weight, fasting glucose"},{"key":"dv7","label":"Year 3","offset":1095,"grace":60,"tests":"Annual health check"},{"key":"dv8","label":"Year 4","offset":1460,"grace":60,"tests":"Annual health check"},{"key":"dv9","label":"Year 5","offset":1826,"grace":60,"tests":"Annual health check"},{"key":"dv10","label":"Year 6","offset":2191,"grace":60,"tests":"Annual health check"},{"key":"dv11","label":"Year 7","offset":2556,"grace":60,"tests":"Annual health check"},{"key":"dv12","label":"Year 8","offset":2922,"grace":60,"tests":"Annual health check"},{"key":"dv13","label":"Year 9","offset":3287,"grace":60,"tests":"Annual health check"},{"key":"dv14","label":"Year 10","offset":3652,"grace":60,"tests":"Annual health check"},{"key":"dv15","label":"Year 11","offset":4017,"grace":60,"tests":"Annual health check"},{"key":"dv16","label":"Year 12","offset":4383,"grace":60,"tests":"Annual health check"},{"key":"dv17","label":"Year 13","offset":4748,"grace":60,"tests":"Annual health check"},{"key":"dv18","label":"Year 14","offset":5113,"grace":60,"tests":"Annual health check"},{"key":"dv19","label":"Year 15","offset":5478,"grace":60,"tests":"Annual health check — follow-up continues for life"}],"recipCols":["Creatinine / eGFR","Tacrolimus trough"],"donorCols":["Creatinine / eGFR","UPCR","Blood pressure","Weight"]};
+</script>
+<script>
+/* ==========================================================================
+   NNUH Kidney Transplant — Coordinator Tracker (client-side application)
+   State lives in memory. Persistence is by explicit case-file save/load.
+   ========================================================================== */
+'use strict';
 
-        function updateTimerDisplay() {
-            if (!startTime) return;
-            const elapsed = Math.floor((Date.now() - startTime) / 1000);
-            const mins = String(Math.floor(elapsed / 60)).padStart(2, '0');
-            const secs = String(elapsed % 60).padStart(2, '0');
-            document.getElementById('wit-display').innerText = `${mins}:${secs}`;
-        }
+const DATA = window.__DATA__;
+const TODAY = () => new Date(new Date().toDateString());
+const iso = (d) => {
+  const p = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+};
+const parseISO = (s) => (s ? new Date(s + 'T00:00:00') : null);
+const addDays = (d, n) => new Date(d.getTime() + n * 86400000);
+const fmt = (s) => {
+  const d = parseISO(s);
+  if (!d) return '';
+  return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+const el = (tag, attrs = {}, kids = []) => {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v === undefined || v === null || v === false) continue;
+    if (k === 'class') n.className = v;
+    else if (k === 'text') n.textContent = v;
+    else if (k === 'html') n.innerHTML = v;
+    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
+    else n.setAttribute(k, v);
+  }
+  (Array.isArray(kids) ? kids : [kids]).forEach((c) => { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
+  return n;
+};
 
-        // Functional Filter System
-        function filterDept(dept) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`tab-${dept}`).classList.add('active');
-            
-            document.querySelectorAll('.dept-section').forEach(section => {
-                if (dept === 'all' || section.getAttribute('data-dept') === dept) {
-                    section.classList.remove('hidden');
-                } else {
-                    section.classList.add('hidden');
-                }
-            });
-        }
+/* ---------------------------------------------------------------- state */
+const blankState = () => ({
+  meta: {
+    version: 1,
+    caseId: '',
+    donorName: '', donorMrn: '', donorDob: '',
+    recipientName: '', recipientMrn: '', recipientDob: '',
+    coordinator: '', opened: iso(TODAY()),
+    caseStatus: 'waiting', scheduledDate: '',
+    transplantDate: '', nephrectomyDate: '',
+    email: '', savedAt: '',
+  },
+  // key -> {na, ordered, completed, result, notes}
+  items: {},
+  // key -> {attended, notes, values:{}}
+  visits: {},
+});
 
-        // Checklist Node Engine logic
-        function toggleRow(row, event) {
-            if (event.target.type === 'checkbox') return;
-            const checkbox = row.querySelector('.chk-box');
-            checkbox.checked = !checkbox.checked;
-            updateProgress();
-        }
+let S = blankState();
+let dirty = false;
+let hasCase = false;
+let activeTab = 'registry';
+const filters = { donor: 'all', recipient: 'all' };
+const search = { donor: '', recipient: '' };
 
-        function updateProgress() {
-            const allItems = document.querySelectorAll('.checkbox-item');
-            let totalWeights = 0;
-            let checkedWeights = 0;
+/* ---------------------------------------------------------- cloud config */
+const CFG_KEY = 'nnuh_tracker_cfg_v1';
+const loadCfg = () => {
+  try { return Object.assign({ gasUrl: '', emailjsService: '', emailjsTemplate: '', emailjsPublicKey: '', password: '' }, JSON.parse(localStorage.getItem(CFG_KEY) || '{}')); }
+  catch { return { gasUrl: '', emailjsService: '', emailjsTemplate: '', emailjsPublicKey: '', password: '' }; }
+};
+let CFG = loadCfg();
+const saveCfg = () => { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); syncCloudPill(); };
+const cloudReady = () => !!CFG.gasUrl;
 
-            allItems.forEach((item, index) => {
-                const parentCheck = item.querySelector('.chk-box');
-                const nestedBox = item.querySelector('.nested-box');
-                
-                if (parentCheck.checked) {
-                    item.classList.add('checked-row');
-                } else {
-                    item.classList.remove('checked-row');
-                }
+let registryCache = [];
+let registryQuery = '';
+let registryLoading = false;
+let registryView = 'home'; // 'home' | 'register' | 'browse'
+let registryUnlocked = false;
+let settingsUnlocked = false;
+let navHistory = [];
+let lastNavState = null;
+let suppressHistory = false;
+function goBack() {
+  if (!navHistory.length) return;
+  const prev = navHistory.pop();
+  activeTab = prev.activeTab;
+  registryView = prev.registryView;
+  suppressHistory = true;
+  render();
+}
+let browseWho = 'donor'; // 'donor' | 'recipient'
+let statusFilter = 'all'; // 'all' | 'waiting' | 'scheduled' | 'transplanted'
+let dateFrom = '';
+let dateTo = '';
 
-                if (nestedBox) {
-                    const subs = nestedBox.querySelectorAll('.chk-box-sub');
-                    const totalSubs = subs.length;
-                    let checkedSubs = 0;
-                    subs.forEach(s => { if(s.checked) checkedSubs++; });
+const CASE_STATUS = {
+  waiting: { label: 'On waiting list', badge: 'b-todo' },
+  scheduled: { label: 'Scheduled', badge: 'b-due' },
+  transplanted: { label: 'Transplanted', badge: 'b-complete' },
+};
 
-                    totalWeights += 1;
-                    if (parentCheck.checked) {
-                        checkedWeights += 0.5 + ((checkedSubs / totalSubs) * 0.5);
-                    } else {
-                        checkedWeights += (checkedSubs / totalSubs) * 0.5;
-                    }
-                } else {
-                    totalWeights += 1;
-                    if (parentCheck.checked) checkedWeights += 1;
-                }
-                
-                localStorage.setItem(`combi_chk_item_${index}`, parentCheck.checked);
-            });
+let autosaveTimer = null;
+const markDirty = () => {
+  dirty = true;
+  syncCloudPill();
+  if (hasCase && cloudReady()) {
+    clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => { cloudSave(true); }, 2500);
+  }
+};
+const markClean = () => {
+  dirty = false;
+  clearTimeout(autosaveTimer);
+  syncCloudPill();
+};
+function syncCloudPill(state) {
+  const b = document.getElementById('saveState');
+  if (!b) return;
+  if (!cloudReady()) { b.textContent = 'Cloud not configured'; b.className = 'cloud-pill off'; return; }
+  if (state === 'busy') { b.textContent = 'Syncing…'; b.className = 'cloud-pill busy'; return; }
+  if (state === 'error') { b.textContent = 'Sync failed'; b.className = 'cloud-pill off'; return; }
+  b.textContent = dirty ? (cloudReady() ? 'Autosaving\u2026' : 'Unsaved changes') : 'Synced to Google Sheet';
+  b.className = 'cloud-pill ' + (dirty ? 'off' : 'on');
+}
 
-            const percent = totalWeights > 0 ? Math.round((checkedWeights / totalWeights) * 100) : 0;
-            document.getElementById('completion-badge').innerText = `${percent}%`;
-            document.getElementById('completion-bar').style.width = `${percent}%`;
+const itemState = (key) => (S.items[key] ||= { na: false, ordered: '', completed: '', result: '', notes: '' });
+const visitState = (key) => (S.visits[key] ||= { attended: '', notes: '', values: {} });
 
-            calculateBadges();
-        }
+const statusOf = (st) => {
+  if (st.na) return 'na';
+  if (st.completed) return 'complete';
+  if (st.ordered) return 'pending';
+  return 'todo';
+};
+const STATUS_LABEL = { complete: 'Complete', pending: 'Pending result', todo: 'Not started', na: 'N/A' };
 
-        function calculateBadges() {
-            const tracks = ['coord', 'nephrology', 'donor', 'surgery', 'urology', 'icu'];
-            let grandTotal = 0;
+/* --------------------------------------------------------------- totals */
+function tally(list) {
+  const t = { complete: 0, pending: 0, todo: 0, na: 0, gatesOpen: [], total: 0 };
+  list.forEach((it) => {
+    if (it.group) return;
+    const st = itemState(it.key);
+    const s = statusOf(st);
+    t[s] += 1;
+    if (s !== 'na') t.total += 1;
+    if (it.gate && s !== 'complete' && s !== 'na') t.gatesOpen.push(it);
+  });
+  t.outstanding = t.pending + t.todo;
+  t.pct = t.total ? Math.round((t.complete / t.total) * 100) : 0;
+  t.ready = t.total > 0 && t.outstanding === 0;
+  return t;
+}
 
-            tracks.forEach(t => {
-                const block = document.querySelector(`.dept-section[data-dept="${t}"]`);
-                if (block) {
-                    const elements = block.querySelectorAll('.chk-box');
-                    let count = 0;
-                    elements.forEach(el => { if(!el.checked) count++; });
-                    document.getElementById(`count-${t}`).innerText = count;
-                    grandTotal += count;
-                }
-            });
-            
-            // Reference items count
-            const refBlock = document.querySelector('.dept-section[data-dept="ref"]');
-            document.getElementById('count-ref').innerText = refBlock ? "REF" : "0";
-            document.getElementById('count-all').innerText = grandTotal;
-        }
+/* ---------------------------------------------------------- visit logic */
+function visitStatus(v, anchorISO) {
+  const st = visitState(v.key);
+  if (st.attended) return { code: 'attended', label: 'Attended', due: dueOf(v, anchorISO) };
+  const due = dueOf(v, anchorISO);
+  if (!due) return { code: 'unset', label: 'Set the date', due: null };
+  const t = TODAY();
+  if (t > addDays(due, v.grace)) return { code: 'overdue', label: 'OVERDUE', due };
+  if (t >= addDays(due, -v.grace)) return { code: 'due', label: 'Due now', due };
+  return { code: 'scheduled', label: 'Scheduled', due };
+}
+function dueOf(v, anchorISO) {
+  const a = parseISO(anchorISO);
+  return a ? addDays(a, v.offset) : null;
+}
 
-        // Hydrate metrics on page startup
-        window.onload = function() {
-            const inputs = [
-                'meta-rec-name', 'meta-rec-mrn', 'meta-icu-bed', 'meta-don-name', 'meta-don-mrn', 
-                'meta-surg-ward', 'meta-surg-date', 'meta-proc-type', 'sign-neph-name', 'sign-neph-date',
-                'sign-surg-name', 'sign-surg-date', 'sign-uro-name', 'sign-uro-date', 'sign-icu-name', 'sign-icu-date'
-            ];
-            
-            inputs.forEach(id => {
-                const el = document.getElementById(id);
-                if(localStorage.getItem(`combi_${id}`)) el.value = localStorage.getItem(`combi_${id}`);
-                el.addEventListener('input', () => localStorage.setItem(`combi_${id}`, el.value));
-            });
+/* =========================================================== RENDERING */
+const app = () => document.getElementById('app');
 
-            document.querySelectorAll('.checkbox-item').forEach((item, index) => {
-                const parentCheck = item.querySelector('.chk-box');
-                if (localStorage.getItem(`combi_chk_item_${index}`) === 'true') {
-                    parentCheck.checked = true;
-                }
-            });
+function render() {
+  const root = app();
+  root.innerHTML = '';
+  if (!suppressHistory && lastNavState && (lastNavState.activeTab !== activeTab || lastNavState.registryView !== registryView)) {
+    navHistory.push(lastNavState);
+    if (navHistory.length > 50) navHistory.shift();
+  }
+  lastNavState = { activeTab, registryView };
+  suppressHistory = false;
+  const backBtn = document.getElementById('btnBack');
+  if (backBtn) backBtn.style.visibility = navHistory.length ? 'visible' : 'hidden';
+  const tabsNav = document.querySelector('.tabs');
+  const showTabs = activeTab !== 'registry';
+  tabsNav.style.display = showTabs ? '' : 'none';
+  document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === activeTab));
+  updatePatientBanner(showTabs);
+  const caseActionsEl = document.getElementById('caseActions');
+  if (caseActionsEl) caseActionsEl.className = 'case-actions' + ((showTabs && activeTab !== 'help') ? '' : ' off');
+  if (activeTab === 'registry') root.appendChild(renderRegistry());
+  else if (activeTab === 'overview') root.appendChild(renderOverview());
+  else if (activeTab === 'donor') root.appendChild(renderChecklist('donor'));
+  else if (activeTab === 'recipient') root.appendChild(renderChecklist('recipient'));
+  else if (activeTab === 'rfu') root.appendChild(renderFollowUp('rfu'));
+  else if (activeTab === 'dfu') root.appendChild(renderFollowUp('dfu'));
+  else if (activeTab === 'help') root.appendChild(renderHelp());
+  updateHeaderChips();
+  syncCloudPill();
+}
 
-            if (localStorage.getItem('global_wit_start_time')) {
-                startWIT();
-            }
+function updateHeaderChips() {
+  const d = tally(DATA.donor), r = tally(DATA.recipient);
+  const c = document.getElementById('headerChips');
+  c.innerHTML = '';
+  c.appendChild(chip('Donor', `${d.complete}/${d.total}`, d.ready ? 'ok' : d.outstanding ? 'warn' : 'muted'));
+  c.appendChild(chip('Recipient', `${r.complete}/${r.total}`, r.ready ? 'ok' : r.outstanding ? 'warn' : 'muted'));
+  const od = overdueCount();
+  c.appendChild(chip('Overdue visits', String(od), od ? 'bad' : 'ok'));
+}
+function chip(label, value, tone) {
+  return el('div', { class: 'chip ' + tone }, [el('span', { class: 'chip-l', text: label }), el('strong', { text: value })]);
+}
+function overdueCount() {
+  let n = 0;
+  DATA.recipVisits.forEach((v) => { if (!v.section && visitStatus(v, S.meta.transplantDate).code === 'overdue') n++; });
+  DATA.donorVisits.forEach((v) => { if (!v.section && visitStatus(v, S.meta.nephrectomyDate).code === 'overdue') n++; });
+  return n;
+}
 
-            updateProgress();
-        }
-    </script>
+function updatePatientBanner(show) {
+  const b = document.getElementById('patientBanner');
+  if (!b) return;
+  if (!show) { b.style.display = 'none'; return; }
+  b.style.display = 'flex';
+  b.innerHTML = '';
+  b.appendChild(el('b', { text: `Recipient: ${S.meta.recipientName || 'Unnamed recipient'}` }));
+  b.appendChild(el('span', { text: `Donor: ${S.meta.donorName || 'Unnamed donor'}` }));
+  if (S.meta.caseId) b.appendChild(el('span', { text: `Case ${S.meta.caseId}` }));
+}
+
+function pinInput(placeholder) {
+  const i = el('input', { type: 'password', class: 'search', placeholder: placeholder || 'Password',
+    inputmode: 'numeric', maxlength: '6' });
+  i.addEventListener('input', () => { i.value = i.value.replace(/\D/g, '').slice(0, 6); });
+  return i;
+}
+
+
+/* ------------------------------------------------------------ registry */
+function renderRegistry() {
+  const wrap = el('div', { class: 'stack' });
+
+  const hero = el('section', { class: 'reg-hero' });
+  hero.appendChild(el('h2', { text: 'NNUH Kidney Transplant Program — Patient Registry' }));
+  hero.appendChild(el('p', { text: 'Register a new donor–recipient pair, or view the donor and recipient list (password protected).' }));
+  wrap.appendChild(hero);
+
+  if (!cloudReady()) {
+    const warn = card('Cloud not configured', null);
+    warn.appendChild(el('p', { class: 'muted-note', text: 'Add your Google Apps Script URL in Settings to enable the shared registry, cloud save, Google Sheet export and email reminders.' }));
+    const b = el('button', { class: 'btn', text: 'Open Settings' });
+    b.addEventListener('click', openSettings);
+    warn.appendChild(b);
+    wrap.appendChild(warn);
+  }
+
+  if (registryView === 'home') { wrap.appendChild(renderRegistryHome()); return wrap; }
+  if (registryView === 'register') { wrap.appendChild(renderRegisterForm()); return wrap; }
+  wrap.appendChild(renderRegistryBrowse());
+  return wrap;
+}
+
+function renderRegistryHome() {
+  const box = el('div', { class: 'sheet-tiles', style: 'grid-template-columns:1fr 1fr' });
+  const regTile = el('button', { class: 'sheet-tile' }, [
+    el('b', { text: 'Register' }),
+    el('span', { text: 'Register a new donor \u2013 recipient pair and open its checklists.' }),
+  ]);
+  regTile.addEventListener('click', () => { registryView = 'register'; render(); });
+  const viewTile = el('button', { class: 'sheet-tile' }, [
+    el('b', { text: 'View donors & recipients' }),
+    el('span', { text: 'Password-protected list of everyone registered, with search and date filter.' }),
+  ]);
+  viewTile.addEventListener('click', () => { registryView = 'browse'; render(); });
+  box.append(regTile, viewTile);
+  return box;
+}
+
+function renderRegisterForm() {
+  const wrap = el('div', { class: 'stack' });
+  const back = el('button', { class: 'btn btn-ghost', text: '\u2190 Back' });
+  back.addEventListener('click', () => { registryView = 'home'; render(); });
+  wrap.appendChild(back);
+
+  const regCard = card('Register a new donor \u2013 recipient pair', 'Creates a new case and opens its checklists.');
+  const grid = el('div', { class: 'form-grid' });
+  const tmp = { donorName: '', recipientName: '', coordinator: '', email: '',
+    caseStatus: 'waiting', scheduledDate: '', transplantDate: '' };
+  const f = (label, key, type = 'text') => {
+    const input = el('input', { type });
+    input.addEventListener('input', (e) => { tmp[key] = e.target.value; });
+    return el('label', { class: 'field' }, [el('span', { text: label }), input]);
+  };
+  grid.append(
+    f('Donor name', 'donorName'),
+    f('Recipient name', 'recipientName'),
+    f('Transplant coordinator', 'coordinator'), f('Reminder email', 'email', 'email'),
+  );
+  regCard.appendChild(grid);
+
+  const statusRow = el('div', { class: 'form-grid' });
+  const statusSel = el('select');
+  Object.keys(CASE_STATUS).forEach((k) => statusSel.appendChild(el('option', { value: k, text: CASE_STATUS[k].label })));
+  statusSel.value = tmp.caseStatus;
+  const dateWrap = el('div');
+  const renderStatusDate = () => {
+    dateWrap.innerHTML = '';
+    if (tmp.caseStatus === 'scheduled') {
+      const i = el('input', { type: 'date', value: tmp.scheduledDate });
+      i.addEventListener('change', (e) => { tmp.scheduledDate = e.target.value; });
+      dateWrap.appendChild(el('label', { class: 'field' }, [el('span', { text: 'Scheduled transplant date' }), i]));
+    } else if (tmp.caseStatus === 'transplanted') {
+      const i = el('input', { type: 'date', value: tmp.transplantDate });
+      i.addEventListener('change', (e) => { tmp.transplantDate = e.target.value; });
+      dateWrap.appendChild(el('label', { class: 'field' }, [el('span', { text: 'Date of transplant' }), i]));
+    }
+  };
+  statusSel.addEventListener('change', (e) => { tmp.caseStatus = e.target.value; renderStatusDate(); });
+  statusRow.append(el('label', { class: 'field' }, [el('span', { text: 'Status' }), statusSel]), dateWrap);
+  renderStatusDate();
+  regCard.appendChild(statusRow);
+
+  const regBtn = el('button', { class: 'btn', text: 'Register and open', style: 'margin-top:14px' });
+  regBtn.addEventListener('click', async () => {
+    if (!tmp.recipientName && !tmp.donorName) { toast('Enter at least a donor or recipient name.', true); return; }
+    if (dirty && hasCase && !confirm('Discard the currently open case and register a new one?')) return;
+    S = blankState();
+    Object.assign(S.meta, tmp);
+    S.meta.caseId = genCaseId();
+    hasCase = true;
+    if (cloudReady()) { await cloudSave(true); toast('Case registered.'); }
+    else toast('Case started (not saved to cloud \u2014 add a Google Apps Script URL in Settings).');
+    registryView = 'home';
+    activeTab = 'overview';
+    render();
+  });
+  regCard.appendChild(regBtn);
+  wrap.appendChild(regCard);
+  return wrap;
+}
+
+function renderRegistryBrowse() {
+  const wrap = el('div', { class: 'stack' });
+  const back = el('button', { class: 'btn btn-ghost', text: '\u2190 Back' });
+  back.addEventListener('click', () => { registryView = 'home'; registryUnlocked = false; render(); });
+  wrap.appendChild(back);
+
+  if (CFG.password && !registryUnlocked) {
+    const lock = card('Enter password to view donors & recipients', 'This list holds every registered donor and recipient.');
+    const row = el('div', { class: 'toolbar' });
+    const pwInput = pinInput();
+    const go = () => {
+      if (pwInput.value === CFG.password) { registryUnlocked = true; render(); }
+      else toast('Incorrect password.', true);
+    };
+    pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+    const btn = el('button', { class: 'btn', text: 'Unlock' });
+    btn.addEventListener('click', go);
+    row.append(pwInput, btn);
+    lock.appendChild(row);
+    wrap.appendChild(lock);
+    return wrap;
+  }
+
+  // sub-tabs: donor / recipient
+  const subTabs = el('div', { class: 'segmented' });
+  [['donor', 'Donors'], ['recipient', 'Recipients']].forEach(([k, lbl]) => {
+    const b = el('button', { class: 'seg-btn' + (browseWho === k ? ' on' : ''), text: lbl });
+    b.addEventListener('click', () => { browseWho = k; render(); });
+    subTabs.appendChild(b);
+  });
+  wrap.appendChild(subTabs);
+
+  // search + status + date filter
+  const listCard = card('Registered ' + (browseWho === 'donor' ? 'donors' : 'recipients'), 'Search by name or MRN, filter by status or the date the case was opened, then click a row to open it.');
+  const tools = el('div', { class: 'toolbar' });
+  const sInput = el('input', { type: 'search', class: 'search', placeholder: 'Search name or MRN\u2026', value: registryQuery });
+  let debounceT;
+  sInput.addEventListener('input', (e) => {
+    registryQuery = e.target.value;
+    clearTimeout(debounceT);
+    debounceT = setTimeout(loadRegistryList, 250);
+  });
+  tools.appendChild(sInput);
+  const statusGroup = el('div', { class: 'segmented' });
+  [['all', 'All'], ['waiting', 'Waiting list'], ['scheduled', 'Scheduled'], ['transplanted', 'Transplanted']].forEach(([k, lbl]) => {
+    const b = el('button', { class: 'seg-btn' + (statusFilter === k ? ' on' : ''), text: lbl });
+    b.addEventListener('click', () => { statusFilter = k; render(); });
+    statusGroup.appendChild(b);
+  });
+  tools.appendChild(statusGroup);
+  const fromF = el('label', { class: 'field small' }, [el('span', { text: 'Opened from' }),
+    (() => { const i = el('input', { type: 'date', value: dateFrom }); i.addEventListener('change', (e) => { dateFrom = e.target.value; paintList(); }); return i; })()]);
+  const toF = el('label', { class: 'field small' }, [el('span', { text: 'Opened to' }),
+    (() => { const i = el('input', { type: 'date', value: dateTo }); i.addEventListener('change', (e) => { dateTo = e.target.value; paintList(); }); return i; })()]);
+  tools.append(fromF, toF);
+  if (dateFrom || dateTo) {
+    const clr = el('button', { class: 'btn btn-ghost', text: 'Clear dates' });
+    clr.addEventListener('click', () => { dateFrom = ''; dateTo = ''; render(); });
+    tools.appendChild(clr);
+  }
+  listCard.appendChild(tools);
+  const listBox = el('div', { class: 'case-list', id: 'caseListBox' });
+  listCard.appendChild(listBox);
+  wrap.appendChild(listCard);
+
+  function filteredCases() {
+    return registryCache.filter((c) => {
+      const opened = (c.opened || '').slice(0, 10);
+      if (dateFrom && (!opened || opened < dateFrom)) return false;
+      if (dateTo && (!opened || opened > dateTo)) return false;
+      const st = c.caseStatus || 'waiting';
+      if (statusFilter !== 'all' && st !== statusFilter) return false;
+      return true;
+    });
+  }
+  function paintList() {
+    listBox.innerHTML = '';
+    if (!cloudReady()) { listBox.appendChild(el('div', { class: 'empty-state', text: 'Configure the cloud connection to browse registered patients.' })); return; }
+    if (registryLoading) { listBox.appendChild(el('div', { class: 'empty-state', text: 'Loading\u2026' })); return; }
+    const rows = filteredCases();
+    if (!rows.length) { listBox.appendChild(el('div', { class: 'empty-state', text: 'No registered pairs match yet.' })); return; }
+    rows.forEach((c) => {
+      const st = CASE_STATUS[c.caseStatus || 'waiting'];
+      const name = browseWho === 'donor' ? (c.donorName || 'Unnamed donor') : (c.recipientName || 'Unnamed recipient');
+      const other = browseWho === 'donor' ? (c.recipientName || 'Unnamed recipient') : (c.donorName || 'Unnamed donor');
+      const row = el('div', { class: 'case-row', style: 'grid-template-columns:1fr auto auto' });
+      row.appendChild(el('div', { class: 'who' }, [
+        el('b', { text: name }),
+        el('span', { text: `${browseWho === 'donor' ? 'Recipient' : 'Donor'}: ${other}` }),
+      ]));
+      row.appendChild(badge(st.badge.replace('b-', ''), st.label));
+      const dateText = c.caseStatus === 'transplanted' && c.transplantDate ? 'Transplanted ' + fmt(c.transplantDate)
+        : c.caseStatus === 'scheduled' && c.scheduledDate ? 'Scheduled ' + fmt(c.scheduledDate)
+        : c.opened ? 'Opened ' + fmt(c.opened.slice(0, 10)) : '';
+      row.appendChild(el('div', { class: 'upd', text: dateText }));
+      row.addEventListener('click', () => {
+        if (dirty && hasCase && !confirm('Discard unsaved changes on the current case and open this one?')) return;
+        openCase(c.caseId);
+      });
+      listBox.appendChild(row);
+    });
+  }
+  async function loadRegistryList() {
+    if (!cloudReady()) { paintList(); return; }
+    registryLoading = true; paintList();
+    try { registryCache = await gasListCases(registryQuery); }
+    catch (e) { toast('Could not load the registry \u2014 ' + e.message, true); registryCache = []; }
+    registryLoading = false; paintList();
+  }
+  loadRegistryList();
+
+  return wrap;
+}
+
+/* ------------------------------------------------------------ overview */
+function renderOverview() {
+  const wrap = el('div', { class: 'stack' });
+
+  // patient heading + quick-open sheet tiles
+  const head = card(null, null);
+  const ph = el('div', { class: 'patient-head' });
+  ph.appendChild(el('h2', { text: `${S.meta.recipientName || 'Unnamed recipient'} \u2194 ${S.meta.donorName || 'Unnamed donor'}` }));
+  const back = el('button', { class: 'btn btn-ghost', text: '\u2190 Registry' });
+  back.addEventListener('click', () => { activeTab = 'registry'; registryView = 'home'; render(); });
+  ph.appendChild(back);
+  head.appendChild(ph);
+  const dT = tally(DATA.donor), rT = tally(DATA.recipient);
+  const tiles = el('div', { class: 'sheet-tiles' });
+  const tile = (label, sub, tab, t) => {
+    const b = el('button', { class: 'sheet-tile' }, [
+      el('span', { class: 'pct', text: (t ? t.pct : 0) + '%' }),
+      el('b', { text: label }), el('span', { text: sub }),
+    ]);
+    b.addEventListener('click', () => { activeTab = tab; render(); });
+    return b;
+  };
+  tiles.append(
+    tile('Donor checklist', 'Evaluation & perioperative', 'donor', dT),
+    tile('Recipient checklist', 'Evaluation & perioperative', 'recipient', rT),
+    tile('Donor follow-up', 'Lifelong schedule', 'dfu', null),
+    tile('Recipient follow-up', 'Post-transplant schedule', 'rfu', null),
+  );
+  head.appendChild(tiles);
+  wrap.appendChild(head);
+
+  // identity
+  const idCard = card('Case identity', 'One case file per donor–recipient pair.');
+  const grid = el('div', { class: 'form-grid' });
+  const f = (label, key, type = 'text') => {
+    const input = el('input', { type, value: S.meta[key] || '', id: 'meta_' + key });
+    input.addEventListener('input', (e) => { S.meta[key] = e.target.value; markDirty(); if (key.includes('Date')) render(); });
+    return el('label', { class: 'field' }, [el('span', { text: label }), input]);
+  };
+  const statusSel = el('select', { id: 'meta_caseStatus' });
+  Object.keys(CASE_STATUS).forEach((k) => statusSel.appendChild(el('option', { value: k, text: CASE_STATUS[k].label })));
+  statusSel.value = S.meta.caseStatus || 'waiting';
+  statusSel.addEventListener('change', (e) => { S.meta.caseStatus = e.target.value; markDirty(); render(); });
+  grid.append(el('label', { class: 'field' }, [el('span', { text: 'Status' }), statusSel]));
+  if (S.meta.caseStatus === 'scheduled') grid.append(f('Scheduled transplant date', 'scheduledDate', 'date'));
+  grid.append(
+    f('Transplant coordinator', 'coordinator'),
+    f('Date file opened', 'opened', 'date'),
+    f('Donor name', 'donorName'),
+    f('Donor date of birth', 'donorDob', 'date'),
+    f('Recipient name', 'recipientName'),
+    f('Recipient date of birth', 'recipientDob', 'date'),
+    f('Date of transplant', 'transplantDate', 'date'),
+    f('Date of donor nephrectomy', 'nephrectomyDate', 'date'),
+    f('Reminder email (coordinator/patient)', 'email', 'email'),
+  );
+  idCard.appendChild(grid);
+  wrap.appendChild(idCard);
+
+  // progress
+  const d = tally(DATA.donor), r = tally(DATA.recipient);
+  const prog = el('div', { class: 'two-col' });
+  prog.append(progressCard('Living donor work-up', d, 'donor'), progressCard('Recipient work-up', r, 'recipient'));
+  wrap.appendChild(prog);
+
+  // gates
+  const gateCard = card('Mandatory gates', 'The case may not proceed to surgery while any gate is open.');
+  const open = [...d.gatesOpen.map((i) => ({ ...i, who: 'Donor' })), ...r.gatesOpen.map((i) => ({ ...i, who: 'Recipient' }))];
+  if (!open.length) {
+    gateCard.appendChild(el('p', { class: 'ok-note', text: '✓ All mandatory gates are complete.' }));
+  } else {
+    const ul = el('ul', { class: 'gate-list' });
+    open.forEach((g) => ul.appendChild(el('li', {}, [
+      el('span', { class: 'tag ' + (g.who === 'Donor' ? 'tag-d' : 'tag-r'), text: g.who }),
+      el('span', { text: g.text.replace(/^GATE — /, '') }),
+      el('span', { class: 'ref', text: '§' + g.ref }),
+    ])));
+    gateCard.appendChild(ul);
+  }
+  wrap.appendChild(gateCard);
+
+  // upcoming visits
+  const up = card('Follow-up — attention needed', 'Overdue and currently due visits across both schedules.');
+  const rows = [];
+  const collect = (list, anchor, who) => list.forEach((v) => {
+    if (v.section) return;
+    const s = visitStatus(v, anchor);
+    if (s.code === 'overdue' || s.code === 'due') rows.push({ v, s, who });
+  });
+  collect(DATA.recipVisits, S.meta.transplantDate, 'Recipient');
+  collect(DATA.donorVisits, S.meta.nephrectomyDate, 'Donor');
+  rows.sort((a, b) => (a.s.due - b.s.due));
+  if (!rows.length) {
+    up.appendChild(el('p', { class: 'muted-note', text: S.meta.transplantDate || S.meta.nephrectomyDate ? 'Nothing overdue or due today.' : 'Enter the transplant and nephrectomy dates above to activate the follow-up schedules.' }));
+  } else {
+    const t = el('table', { class: 'grid' });
+    t.appendChild(el('thead', {}, el('tr', {}, ['Who', 'Visit', 'Due', 'Status'].map((h) => el('th', { text: h })))));
+    const tb = el('tbody');
+    rows.slice(0, 12).forEach(({ v, s, who }) => tb.appendChild(el('tr', {}, [
+      el('td', {}, el('span', { class: 'tag ' + (who === 'Donor' ? 'tag-d' : 'tag-r'), text: who })),
+      el('td', { text: v.label }),
+      el('td', { text: s.due ? fmt(iso(s.due)) : '' }),
+      el('td', {}, badge(s.code, s.label)),
+    ])));
+    t.appendChild(tb);
+    up.appendChild(t);
+  }
+  wrap.appendChild(up);
+  return wrap;
+}
+
+function progressCard(title, t, tab) {
+  const c = card(title, null);
+  const bar = el('div', { class: 'bar' }, [
+    el('div', { class: 'seg seg-complete', style: `width:${pc(t.complete, t.total)}%` }),
+    el('div', { class: 'seg seg-pending', style: `width:${pc(t.pending, t.total)}%` }),
+  ]);
+  c.appendChild(el('div', { class: 'big-pct', text: t.pct + '%' }));
+  c.appendChild(bar);
+  const stats = el('div', { class: 'stats' });
+  stats.append(
+    stat('Complete', t.complete, 'ok'), stat('Pending', t.pending, 'warn'),
+    stat('Not started', t.todo, 'bad'), stat('N/A', t.na, 'muted'),
+  );
+  c.appendChild(stats);
+  c.appendChild(el('div', { class: 'ready ' + (t.ready ? 'ready-yes' : 'ready-no'),
+    text: t.ready ? 'READY for Transplant Committee' : `${t.outstanding} of ${t.total} outstanding` }));
+  c.appendChild(el('button', { class: 'btn btn-quiet', text: 'Open checklist →', onclick: () => { activeTab = tab; render(); } }));
+  return c;
+}
+const pc = (n, d) => (d ? (n / d) * 100 : 0);
+function stat(label, value, tone) {
+  return el('div', { class: 'stat' }, [el('strong', { class: tone, text: String(value) }), el('span', { text: label })]);
+}
+function badge(code, label) {
+  return el('span', { class: 'badge b-' + code, text: label });
+}
+function card(title, sub) {
+  const c = el('section', { class: 'card' });
+  if (title) c.appendChild(el('h2', { text: title }));
+  if (sub) c.appendChild(el('p', { class: 'sub', text: sub }));
+  return c;
+}
+
+/* ----------------------------------------------------------- checklist */
+function renderChecklist(which) {
+  const list = which === 'donor' ? DATA.donor : DATA.recipient;
+  const t = tally(list);
+  const wrap = el('div', { class: 'stack' });
+
+  const head = el('section', { class: 'card sticky-head' });
+  const nameLine = el('div', { class: 'patient-head', style: 'margin-bottom:6px' });
+  const activeName = which === 'donor' ? (S.meta.donorName || 'Unnamed donor') : (S.meta.recipientName || 'Unnamed recipient');
+  const otherLabel = which === 'donor' ? 'Recipient' : 'Donor';
+  const otherName = which === 'donor' ? (S.meta.recipientName || 'Unnamed recipient') : (S.meta.donorName || 'Unnamed donor');
+  nameLine.appendChild(el('h2', { text: `${which === 'donor' ? 'Donor' : 'Recipient'}: ${activeName}` }));
+  nameLine.appendChild(el('span', { class: 'ready-inline ready-yes', text: `${otherLabel}: ${otherName}` }));
+  head.appendChild(nameLine);
+  head.appendChild(el('h2', { text: which === 'donor' ? 'Living kidney donor — evaluation & perioperative checklist' : 'Kidney transplant recipient — evaluation & perioperative checklist' }));
+  head.appendChild(el('p', { class: 'sub', text: which === 'donor' ? 'Program Manual v2.1, Guidelines 1–3' : 'Program Manual v2.1, Guideline 4' }));
+
+  const bar = el('div', { class: 'bar' }, [
+    el('div', { class: 'seg seg-complete', style: `width:${pc(t.complete, t.total)}%` }),
+    el('div', { class: 'seg seg-pending', style: `width:${pc(t.pending, t.total)}%` }),
+  ]);
+  head.appendChild(bar);
+  head.appendChild(el('div', { class: 'inline-stats' }, [
+    el('span', {}, [el('strong', { text: `${t.complete}/${t.total}` }), ' complete']),
+    el('span', {}, [el('strong', { class: 'warn', text: String(t.pending) }), ' pending']),
+    el('span', {}, [el('strong', { class: 'bad', text: String(t.todo) }), ' not started']),
+    el('span', {}, [el('strong', { class: 'muted', text: String(t.na) }), ' N/A']),
+    el('span', { class: 'ready-inline ' + (t.ready ? 'ready-yes' : 'ready-no'), text: t.ready ? 'READY' : 'NOT READY' }),
+  ]));
+
+  const tools = el('div', { class: 'toolbar' });
+  const sInput = el('input', { type: 'search', placeholder: 'Search items…', value: search[which], class: 'search' });
+  sInput.addEventListener('input', (e) => { search[which] = e.target.value.toLowerCase(); renderRows(); });
+  tools.appendChild(sInput);
+  const fgroup = el('div', { class: 'segmented' });
+  [['all', 'All'], ['outstanding', 'Outstanding'], ['gates', 'Gates'], ['complete', 'Complete']].forEach(([k, lbl]) => {
+    const b = el('button', { class: 'seg-btn' + (filters[which] === k ? ' on' : ''), text: lbl });
+    b.addEventListener('click', () => { filters[which] = k; render(); });
+    fgroup.appendChild(b);
+  });
+  tools.appendChild(fgroup);
+  head.appendChild(tools);
+  wrap.appendChild(head);
+
+  const body = el('div', { id: 'rows' });
+  wrap.appendChild(body);
+
+  function renderRows() {
+    body.innerHTML = '';
+    const q = search[which];
+    const mode = filters[which];
+    let currentGroup = null, groupBox = null, shown = 0;
+    list.forEach((it) => {
+      if (it.group) { currentGroup = it.group; groupBox = null; return; }
+      const st = itemState(it.key);
+      const s = statusOf(st);
+      if (mode === 'outstanding' && (s === 'complete' || s === 'na')) return;
+      if (mode === 'complete' && s !== 'complete') return;
+      if (mode === 'gates' && !it.gate) return;
+      if (q && !(it.text.toLowerCase().includes(q) || it.ref.toLowerCase().includes(q) || currentGroup.toLowerCase().includes(q))) return;
+      if (!groupBox) {
+        groupBox = el('section', { class: 'card group' });
+        groupBox.appendChild(el('h3', { class: 'group-title', text: currentGroup }));
+        body.appendChild(groupBox);
+      }
+      groupBox.appendChild(itemRow(it, which));
+      shown += 1;
+    });
+    if (!shown) body.appendChild(el('section', { class: 'card' }, el('p', { class: 'muted-note', text: 'No items match the current filter.' })));
+  }
+  renderRows();
+  return wrap;
+}
+
+function itemRow(it, which) {
+  const st = itemState(it.key);
+  const s = statusOf(st);
+  const row = el('div', { class: 'item s-' + s + (it.gate ? ' is-gate' : '') });
+
+  const main = el('div', { class: 'item-main' });
+  const title = el('div', { class: 'item-title' });
+  if (it.gate) title.appendChild(el('span', { class: 'gate-pill', text: 'GATE' }));
+  title.appendChild(el('span', { text: it.text.replace(/^GATE — /, '') }));
+  main.appendChild(title);
+  main.appendChild(el('div', { class: 'item-meta' }, [
+    el('span', { class: 'ref', text: '§' + it.ref }),
+    badge(s, STATUS_LABEL[s]),
+  ]));
+  row.appendChild(main);
+
+  const ctl = el('div', { class: 'item-ctl' });
+
+  const done = el('button', { class: 'btn btn-tick' + (s === 'complete' ? ' on' : ''), title: 'Mark complete with today\'s date' , text: s === 'complete' ? '✓ Complete' : '✓ Done' });
+  done.addEventListener('click', () => {
+    if (st.completed) { st.completed = ''; } else { st.completed = iso(TODAY()); st.na = false; if (!st.ordered) st.ordered = st.completed; }
+    markDirty(); render();
+  });
+  ctl.appendChild(done);
+
+  const pend = el('button', { class: 'pending-toggle' + (s === 'pending' ? ' on' : ''), title: 'Mark as ordered / pending result', text: s === 'pending' ? '\u23f3 Pending' : 'Mark pending' });
+  pend.addEventListener('click', () => {
+    if (st.ordered && !st.completed) { st.ordered = ''; } else { st.ordered = iso(TODAY()); st.na = false; }
+    markDirty(); render();
+  });
+  ctl.appendChild(pend);
+
+  const dates = el('div', { class: 'dates' });
+  dates.append(
+    dateField('Ordered', st, 'ordered'),
+    dateField('Completed', st, 'completed'),
+  );
+  ctl.appendChild(dates);
+
+  const na = el('label', { class: 'na' }, [
+    (() => {
+      const cb = el('input', { type: 'checkbox' });
+      cb.checked = !!st.na;
+      cb.addEventListener('change', (e) => { st.na = e.target.checked; if (st.na) { st.ordered = ''; st.completed = ''; } markDirty(); render(); });
+      return cb;
+    })(),
+    el('span', { text: 'N/A' }),
+  ]);
+  ctl.appendChild(na);
+  row.appendChild(ctl);
+
+  const extra = el('div', { class: 'item-extra' });
+  const resultField = textField('Lab value / result', st, 'result');
+  const resultInput = resultField.querySelector('input');
+  resultInput.addEventListener('input', () => {
+    if (resultInput.value.trim() && !st.completed) { st.completed = iso(TODAY()); if (!st.ordered) st.ordered = st.completed; }
+    if (!resultInput.value.trim() && st.completed) { st.completed = ''; }
+  });
+  resultInput.addEventListener('blur', () => { markDirty(); render(); });
+  extra.append(
+    resultField,
+    textField(st.na ? 'Reason for N/A (required)' : 'Notes', st, 'notes', st.na && !st.notes),
+  );
+  row.appendChild(extra);
+  return row;
+}
+
+function dateField(label, obj, key) {
+  const input = el('input', { type: 'date', value: obj[key] || '' });
+  input.addEventListener('change', (e) => { obj[key] = e.target.value; markDirty(); render(); });
+  return el('label', { class: 'field small' }, [el('span', { text: label }), input]);
+}
+function textField(label, obj, key, warn) {
+  const input = el('input', { type: 'text', value: obj[key] || '', class: warn ? 'warn-input' : '' });
+  input.addEventListener('input', (e) => { obj[key] = e.target.value; markDirty(); });
+  input.addEventListener('blur', () => { if (warn) render(); });
+  return el('label', { class: 'field small grow' }, [el('span', { text: label }), input]);
+}
+
+/* ---------------------------------------------------------- follow-ups */
+function renderFollowUp(which) {
+  const isR = which === 'rfu';
+  const list = isR ? DATA.recipVisits : DATA.donorVisits;
+  const anchorKey = isR ? 'transplantDate' : 'nephrectomyDate';
+  const cols = isR ? DATA.recipCols : DATA.donorCols;
+  const wrap = el('div', { class: 'stack' });
+
+  const head = el('section', { class: 'card sticky-head' });
+  const nameLine = el('div', { class: 'patient-head', style: 'margin-bottom:6px' });
+  const activeName = isR ? (S.meta.recipientName || 'Unnamed recipient') : (S.meta.donorName || 'Unnamed donor');
+  const otherLabel = isR ? 'Donor' : 'Recipient';
+  const otherName = isR ? (S.meta.donorName || 'Unnamed donor') : (S.meta.recipientName || 'Unnamed recipient');
+  nameLine.appendChild(el('h2', { text: `${isR ? 'Recipient' : 'Donor'}: ${activeName}` }));
+  nameLine.appendChild(el('span', { class: 'ready-inline ready-yes', text: `${otherLabel}: ${otherName}` }));
+  head.appendChild(nameLine);
+  head.appendChild(el('h2', { text: isR ? 'Recipient follow-up & surveillance' : 'Living donor lifelong follow-up' }));
+  head.appendChild(el('p', { class: 'sub', text: isR ? 'Program Manual v2.1, Guideline 8 §G8.2 and §G8.3' : 'Follow-up is a lifelong obligation of the program, not of the donor · §G8.6' }));
+
+  const anchor = el('input', { type: 'date', value: S.meta[anchorKey] || '' });
+  anchor.addEventListener('change', (e) => { S.meta[anchorKey] = e.target.value; markDirty(); render(); });
+  head.appendChild(el('div', { class: 'toolbar' }, [
+    el('label', { class: 'field' }, [el('span', { text: isR ? 'Date of transplant' : 'Date of donor nephrectomy' }), anchor]),
+  ]));
+
+  const counts = { attended: 0, overdue: 0, due: 0, scheduled: 0 };
+  list.forEach((v) => { if (!v.section) counts[visitStatus(v, S.meta[anchorKey]).code === 'unset' ? 'scheduled' : visitStatus(v, S.meta[anchorKey]).code] += 1; });
+  head.appendChild(el('div', { class: 'inline-stats' }, [
+    el('span', {}, [el('strong', { class: 'ok', text: String(counts.attended) }), ' attended']),
+    el('span', {}, [el('strong', { class: 'bad', text: String(counts.overdue) }), ' overdue']),
+    el('span', {}, [el('strong', { class: 'warn', text: String(counts.due) }), ' due now']),
+    el('span', {}, [el('strong', { class: 'muted', text: String(counts.scheduled) }), ' scheduled']),
+  ]));
+  wrap.appendChild(head);
+
+  let box = null;
+  list.forEach((v) => {
+    if (v.section) {
+      box = el('section', { class: 'card group' });
+      box.appendChild(el('h3', { class: 'group-title', text: v.section }));
+      wrap.appendChild(box);
+      return;
+    }
+    if (!box) { box = el('section', { class: 'card group' }); wrap.appendChild(box); }
+    box.appendChild(visitRow(v, S.meta[anchorKey], cols));
+  });
+  return wrap;
+}
+
+function visitRow(v, anchorISO, cols) {
+  const st = visitState(v.key);
+  const s = visitStatus(v, anchorISO);
+  const row = el('div', { class: 'item v-' + s.code });
+
+  const main = el('div', { class: 'item-main' });
+  main.appendChild(el('div', { class: 'item-title' }, el('span', { text: v.label })));
+  main.appendChild(el('div', { class: 'item-meta' }, [
+    el('span', { class: 'ref', text: 'Day ' + v.offset + ' · ± ' + v.grace + 'd' }),
+    s.due ? el('span', { class: 'due', text: 'Due ' + fmt(iso(s.due)) }) : null,
+    badge(s.code, s.label),
+  ]));
+  main.appendChild(el('div', { class: 'tests', text: v.tests }));
+  row.appendChild(main);
+
+  const ctl = el('div', { class: 'item-ctl' });
+  const done = el('button', { class: 'btn btn-tick' + (st.attended ? ' on' : ''), text: st.attended ? '✓ Attended' : '✓ Attended today' });
+  done.addEventListener('click', () => { st.attended = st.attended ? '' : iso(TODAY()); markDirty(); render(); });
+  ctl.appendChild(done);
+  ctl.appendChild(dateField('Date attended', st, 'attended'));
+  row.appendChild(ctl);
+
+  const extra = el('div', { class: 'item-extra' });
+  cols.forEach((c) => {
+    const input = el('input', { type: 'text', value: st.values[c] || '' });
+    input.addEventListener('input', (e) => { st.values[c] = e.target.value; markDirty(); });
+    extra.appendChild(el('label', { class: 'field small' }, [el('span', { text: c }), input]));
+  });
+  extra.appendChild(textField('Notes', st, 'notes'));
+  row.appendChild(extra);
+  return row;
+}
+
+/* ---------------------------------------------------------------- help */
+function renderHelp() {
+  const wrap = el('div', { class: 'stack' });
+  const c = card('How this tracker works', null);
+  const dl = el('dl', { class: 'help' });
+  const add = (t, d) => { dl.appendChild(el('dt', { text: t })); dl.appendChild(el('dd', { text: d })); };
+  add('Nothing is stored in the browser',
+    'This page holds the case in memory only. Nothing is written to the browser, so a shared computer never retains patient data. Use Save case file to write a .json file to your own drive, and Load case file to reopen it. Save before closing the tab.');
+  add('One case file per pair',
+    'A case file holds the donor checklist, the recipient checklist and both follow-up schedules together. Name it with both medical record numbers.');
+  add('Status is derived, never typed',
+    'Enter a date ordered and the item shows Pending result. Enter a date completed and it shows Complete. The ✓ button fills today\'s date in one click, and clicking it again clears it.');
+  add('Marking an item N/A',
+    'Tick N/A only where an item genuinely does not apply — mammography in a male recipient, for example. Always give the reason; the reason box is highlighted until you do. N/A items are excluded from the completion count.');
+  add('Gates',
+    'Items marked GATE are mandatory. The case may not proceed to surgery while any gate is open. The overview lists every open gate across both checklists.');
+  add('READY is not a decision',
+    'The READY banner means every applicable item is complete. It is not a substitute for the Multidisciplinary Transplant Committee decision or Ethics Committee approval.');
+  add('Follow-up due dates',
+    'Enter the operation date once and every due date is calculated from it. A visit turns Due now inside its permitted window and OVERDUE once it passes that window. Overdue counts appear in the header on every tab.');
+  add('Donor follow-up is lifelong',
+    'The donor schedule runs to year 15 and continues beyond it. The program is responsible for recall, not the donor.');
+  add('Printing and the chart record',
+    'Print produces a clean record of everything entered. The signed paper checklist remains the chart record; this tracker is the working tool.');
+  add('Source',
+    'Every item cites its guideline section — §G2.3 is Guideline 2, subsection 3 of the Kidney Transplant Program Manual v2.1. If the manual is revised, this tracker must be revised to match.');
+  c.appendChild(dl);
+  wrap.appendChild(c);
+
+  const c2 = card('Colour key', null);
+  const key = el('div', { class: 'keygrid' });
+  [['complete', 'Complete / Attended'], ['pending', 'Pending result'], ['todo', 'Not started'],
+   ['due', 'Due now'], ['overdue', 'Overdue'], ['na', 'N/A']].forEach(([k, l]) => {
+    key.appendChild(el('div', { class: 'keyrow' }, [badge(k === 'complete' ? 'complete' : k, l)]));
+  });
+  c2.appendChild(key);
+  wrap.appendChild(c2);
+  return wrap;
+}
+
+/* ------------------------------------------------------------ cloud API */
+function genCaseId() {
+  const slug = (s) => (s || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const d = slug(S.meta.donorName);
+  const r = slug(S.meta.recipientName);
+  if (d || r) return `${d || 'donor'}_${r || 'recip'}_${Date.now().toString(36)}`;
+  return `case_${Date.now()}`;
+}
+async function gasCall(method, params, body) {
+  if (!cloudReady()) throw new Error('Set the Google Apps Script URL in Settings first.');
+  let url = CFG.gasUrl;
+  if (method === 'GET') {
+    const qs = new URLSearchParams(params || {});
+    url += (url.includes('?') ? '&' : '?') + qs.toString();
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    return data;
+  }
+  const res = await fetch(url, { method: 'POST', body: JSON.stringify(body) });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  return data;
+}
+async function gasListCases(q) {
+  const data = await gasCall('GET', { action: 'list', q: q || '' });
+  return data.cases || [];
+}
+async function gasGetCase(caseId) {
+  const data = await gasCall('GET', { action: 'get', caseId });
+  return data.data;
+}
+async function gasUpsertCase(state) {
+  return gasCall('POST', null, { action: 'upsert', data: state });
+}
+async function gasExportSheet(caseId, rows) {
+  return gasCall('POST', null, { action: 'exportSheet', caseId, rows });
+}
+
+async function cloudSave(silent) {
+  if (!cloudReady()) { if (!silent) toast('Add your Google Apps Script URL in Settings first.', true); return; }
+  if (!S.meta.caseId) S.meta.caseId = genCaseId();
+  syncCloudPill('busy');
+  try {
+    await gasUpsertCase(S);
+    try { await gasExportSheet(S.meta.caseId, buildExportRows()); } catch (e2) { /* registry row still saved even if the detail tab fails */ }
+    markClean();
+    if (!silent) toast('Saved — registry row and checklist sheet both updated.');
+  } catch (e) {
+    syncCloudPill('error');
+    if (!silent) toast('Could not save to the cloud — ' + e.message, true);
+  }
+}
+async function openCase(caseId) {
+  try {
+    const data = await gasGetCase(caseId);
+    S = Object.assign(blankState(), data);
+    S.items = data.items || {};
+    S.visits = data.visits || {};
+    hasCase = true;
+    markClean();
+    activeTab = 'overview';
+    render();
+  } catch (e) {
+    toast('Could not open that case — ' + e.message, true);
+  }
+}
+function buildExportRows() {
+  const rows = [['Sheet', 'Section', '#', 'Ref', 'Item', 'Status', 'Date ordered', 'Date completed', 'Result / value', 'Notes']];
+  const push = (list, sheet) => {
+    let g = '', n = 0;
+    list.forEach((it) => {
+      if (it.group) { g = it.group; return; }
+      n += 1;
+      const st = itemState(it.key);
+      rows.push([sheet, g, n, '§' + it.ref, it.text, STATUS_LABEL[statusOf(st)], st.ordered, st.completed, st.result, st.notes]);
+    });
+  };
+  push(DATA.donor, 'Donor checklist');
+  push(DATA.recipient, 'Recipient checklist');
+  const pushV = (list, anchor, sheet, cols) => {
+    let g = '';
+    list.forEach((v) => {
+      if (v.section) { g = v.section; return; }
+      const st = visitState(v.key), s = visitStatus(v, anchor);
+      rows.push([sheet, g, '', 'Day ' + v.offset, v.label, s.label, s.due ? iso(s.due) : '', st.attended,
+        cols.map((c) => (st.values[c] ? c + '=' + st.values[c] : '')).filter(Boolean).join('; '), st.notes]);
+    });
+  };
+  pushV(DATA.recipVisits, S.meta.transplantDate, 'Recipient follow-up', DATA.recipCols);
+  pushV(DATA.donorVisits, S.meta.nephrectomyDate, 'Donor follow-up', DATA.donorCols);
+  return rows;
+}
+async function exportSheetClick() {
+  if (!cloudReady()) { toast('Add your Google Apps Script URL in Settings first.', true); return; }
+  if (!S.meta.caseId) S.meta.caseId = genCaseId();
+  toast('Exporting to Google Sheet…');
+  try {
+    await cloudSave(true);
+    const rows = buildExportRows();
+    const res = await gasExportSheet(S.meta.caseId, rows);
+    toast('Exported. Open the Google Sheet to view the new tab.');
+    if (res.url) window.open(res.url, '_blank');
+  } catch (e) {
+    toast('Export failed — ' + e.message, true);
+  }
+}
+function outstandingItems() {
+  const out = [];
+  const collect = (list, sheet) => {
+    let g = '';
+    list.forEach((it) => {
+      if (it.group) { g = it.group; return; }
+      const st = itemState(it.key);
+      const s = statusOf(st);
+      if (s === 'pending' || s === 'todo') out.push({ sheet, group: g, text: it.text, ref: it.ref, status: STATUS_LABEL[s], gate: it.gate });
+    });
+  };
+  collect(DATA.donor, 'Donor');
+  collect(DATA.recipient, 'Recipient');
+  return out;
+}
+function shortLabel(text) {
+  let t = text.replace(/^GATE — /, '');
+  const dashIdx = t.indexOf(' — ');
+  if (dashIdx > -1) t = t.slice(0, dashIdx);
+  const parenIdx = t.indexOf(' (');
+  if (parenIdx > -1) t = t.slice(0, parenIdx);
+  return t.trim();
+}
+function reminderBody() {
+  const items = outstandingItems();
+  const name = `${S.meta.recipientName || 'Recipient'} / ${S.meta.donorName || 'Donor'}`;
+  if (!items.length) return `Everything is complete for ${name}.`;
+  const donorItems = items.filter((i) => i.sheet === 'Donor').map((i) => shortLabel(i.text));
+  const recipItems = items.filter((i) => i.sheet === 'Recipient').map((i) => shortLabel(i.text));
+  const lines = [`Missing for ${name}:`, ''];
+  if (donorItems.length) lines.push(`Donor: ${donorItems.join(', ')}.`);
+  if (recipItems.length) lines.push(`Recipient: ${recipItems.join(', ')}.`);
+  return lines.join('\n');
+}
+async function sendReminder() {
+  const items = outstandingItems();
+  if (!items.length) { toast('Nothing outstanding — no reminder needed.'); return; }
+  const to = S.meta.email;
+  if (!to) { toast('Add the recipient/coordinator email on the Overview tab first.', true); return; }
+  if (!CFG.emailjsService || !CFG.emailjsTemplate || !CFG.emailjsPublicKey) {
+    toast('Add your EmailJS Service ID, Template ID and Public Key in Settings first.', true);
+    return;
+  }
+  try {
+    emailjs.init({ publicKey: CFG.emailjsPublicKey });
+    await emailjs.send(CFG.emailjsService, CFG.emailjsTemplate, {
+      to_email: to,
+      patient_name: `${S.meta.recipientName || 'Recipient'} / ${S.meta.donorName || 'Donor'}`,
+      case_id: S.meta.caseId || genCaseId(),
+      outstanding_count: String(items.length),
+      message: reminderBody(),
+    });
+    toast(`Reminder sent to ${to}.`);
+  } catch (e) {
+    toast('Could not send the reminder — ' + (e.text || e.message || e), true);
+  }
+}
+
+/* ------------------------------------------------------- save / load */
+function saveCase() {
+  S.meta.savedAt = new Date().toISOString();
+  const name = (S.meta.caseId || `${S.meta.donorMrn || 'donor'}-${S.meta.recipientMrn || 'recipient'}`).replace(/[^\w.-]+/g, '_');
+  const blob = new Blob([JSON.stringify(S, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, `transplant-case_${name}_${iso(TODAY())}.json`);
+  markClean();
+}
+function loadCase(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const parsed = JSON.parse(fr.result);
+      if (!parsed || typeof parsed !== 'object' || !parsed.meta) throw new Error('Not a tracker case file.');
+      S = Object.assign(blankState(), parsed);
+      S.items = parsed.items || {};
+      S.visits = parsed.visits || {};
+      hasCase = true;
+      markClean();
+      document.querySelectorAll('.modal-back').forEach((n) => n.remove());
+      activeTab = 'overview';
+      render();
+      toast('Case file loaded.');
+    } catch (e) {
+      toast('Could not read that file — ' + e.message, true);
+    }
+  };
+  fr.readAsText(file);
+}
+function exportCsv() {
+  const rows = [['Sheet', 'Section', '#', 'Ref', 'Item', 'Status', 'Date ordered', 'Date completed', 'Result', 'Notes']];
+  const push = (list, sheet) => {
+    let g = '', n = 0;
+    list.forEach((it) => {
+      if (it.group) { g = it.group; return; }
+      n += 1;
+      const st = itemState(it.key);
+      rows.push([sheet, g, n, '§' + it.ref, it.text, STATUS_LABEL[statusOf(st)], st.ordered, st.completed, st.result, st.notes]);
+    });
+  };
+  push(DATA.donor, 'Donor checklist');
+  push(DATA.recipient, 'Recipient checklist');
+  const pushV = (list, anchor, sheet, cols) => {
+    let g = '';
+    list.forEach((v) => {
+      if (v.section) { g = v.section; return; }
+      const st = visitState(v.key), s = visitStatus(v, anchor);
+      rows.push([sheet, g, '', 'Day ' + v.offset, v.label, s.label, s.due ? iso(s.due) : '', st.attended,
+        cols.map((c) => (st.values[c] ? c + '=' + st.values[c] : '')).filter(Boolean).join('; '), st.notes]);
+    });
+  };
+  pushV(DATA.recipVisits, S.meta.transplantDate, 'Recipient follow-up', DATA.recipCols);
+  pushV(DATA.donorVisits, S.meta.nephrectomyDate, 'Donor follow-up', DATA.donorCols);
+  const csv = rows.map((r) => r.map((c) => {
+    const v = c === undefined || c === null ? '' : String(c);
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }).join(',')).join('\r\n');
+  downloadBlob(new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' }),
+    `transplant-case_${(S.meta.caseId || 'export').replace(/[^\w.-]+/g, '_')}_${iso(TODAY())}.csv`);
+}
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = el('a', { href: url, download: filename });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function toast(msg, bad) {
+  const t = el('div', { class: 'toast' + (bad ? ' bad' : ''), text: msg });
+  document.body.appendChild(t);
+  setTimeout(() => t.classList.add('show'), 10);
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 300); }, 3200);
+}
+
+/* ------------------------------------------------------------- wiring */
+function openSettings() {
+  if (CFG.password && !settingsUnlocked) { openSettingsGate(); return; }
+  openSettingsForm();
+}
+function openSettingsGate() {
+  const back = el('div', { class: 'modal-back' });
+  const m = el('div', { class: 'modal' });
+  m.appendChild(el('h2', { text: 'Settings password' }));
+  m.appendChild(el('p', { class: 'sub', text: 'Enter the settings password to continue.' }));
+  const row = el('div', { class: 'toolbar' });
+  const pwInput = pinInput();
+  const go = () => {
+    if (pwInput.value === CFG.password) { settingsUnlocked = true; back.remove(); openSettingsForm(); }
+    else toast('Incorrect password.', true);
+  };
+  pwInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  const btn = el('button', { class: 'btn', text: 'Unlock' });
+  btn.addEventListener('click', go);
+  row.append(pwInput, btn);
+  m.appendChild(row);
+  const cancel = el('button', { class: 'btn btn-ghost', text: 'Cancel', style: 'margin-top:14px' });
+  cancel.addEventListener('click', () => back.remove());
+  m.appendChild(cancel);
+  back.appendChild(m);
+  back.addEventListener('click', (e) => { if (e.target === back) back.remove(); });
+  document.getElementById('modalRoot').appendChild(back);
+}
+function openSettingsForm() {
+  const back = el('div', { class: 'modal-back' });
+  const m = el('div', { class: 'modal' });
+  m.appendChild(el('h2', { text: 'Settings' }));
+  m.appendChild(el('p', { class: 'sub', text: 'Stored only in this browser. See the Code.gs setup comments for how to get the Apps Script URL and EmailJS IDs.' }));
+  const grid = el('div', { class: 'form-grid' });
+  const tmp = Object.assign({}, CFG);
+  const f = (label, key, ph) => {
+    const input = el('input', { type: 'text', value: tmp[key] || '', placeholder: ph || '' });
+    input.addEventListener('input', (e) => { tmp[key] = e.target.value; });
+    return el('label', { class: 'field' }, [el('span', { text: label }), input]);
+  };
+  const fPin = (label, key) => {
+    const input = el('input', { type: 'text', value: tmp[key] || '', placeholder: 'Password', inputmode: 'numeric', maxlength: '6' });
+    input.addEventListener('input', (e) => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6); tmp[key] = e.target.value; });
+    return el('label', { class: 'field' }, [el('span', { text: label }), input]);
+  };
+  grid.append(
+    f('Google Apps Script Web App URL', 'gasUrl', 'https://script.google.com/macros/s/…/exec'),
+    f('EmailJS Service ID', 'emailjsService'),
+    f('EmailJS Template ID', 'emailjsTemplate'),
+    f('EmailJS Public Key', 'emailjsPublicKey'),
+    fPin('Password (required to view donors/recipients and to open Settings)', 'password'),
+  );
+  m.appendChild(grid);
+
+  const settingsBackup = card('Settings backup', 'If your browser keeps losing these settings (private browsing, an in-app browser, storage getting cleared), save them to a small file and reload them in one click next time \u2014 no retyping.');
+  const sbRow = el('div', { class: 'toolbar' });
+  const sbSave = el('button', { class: 'btn btn-ghost', text: 'Download settings file' });
+  sbSave.addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(tmp, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, 'tracker-settings.json');
+  });
+  const sbLoad = el('button', { class: 'btn btn-ghost', text: 'Load settings file' });
+  const sbFile = el('input', { type: 'file', accept: 'application/json,.json', hidden: true });
+  sbLoad.addEventListener('click', () => sbFile.click());
+  sbFile.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const fr = new FileReader();
+    fr.onload = () => {
+      try {
+        const parsed = JSON.parse(fr.result);
+        CFG = Object.assign(loadCfg(), parsed);
+        saveCfg();
+        back.remove();
+        toast('Settings loaded and saved.');
+        if (activeTab === 'registry') render();
+      } catch (err) { toast('Could not read that settings file.', true); }
+    };
+    fr.readAsText(file);
+  });
+  sbRow.append(sbSave, sbLoad, sbFile);
+  settingsBackup.appendChild(sbRow);
+  m.appendChild(settingsBackup);
+
+  const backupNote = card('Local backup (optional)', 'Save or load a plain .json copy of the currently open case, independent of the cloud.');
+  const bRow = el('div', { class: 'toolbar' });
+  const bSave = el('button', { class: 'btn btn-ghost', text: 'Save case file' });
+  bSave.addEventListener('click', saveCase);
+  const bLoad = el('button', { class: 'btn btn-ghost', text: 'Load case file' });
+  const fi = document.getElementById('fileInput');
+  bLoad.addEventListener('click', () => fi.click());
+  bRow.append(bSave, bLoad);
+  backupNote.appendChild(bRow);
+  m.appendChild(backupNote);
+
+  const actions = el('div', { class: 'modal-actions' });
+  const cancel = el('button', { class: 'btn btn-ghost', text: 'Close' });
+  cancel.addEventListener('click', () => back.remove());
+  const save = el('button', { class: 'btn', text: 'Save settings' });
+  save.addEventListener('click', () => { CFG = tmp; saveCfg(); back.remove(); toast('Settings saved.'); if (activeTab === 'registry') render(); });
+  actions.append(cancel, save);
+  m.appendChild(actions);
+
+  back.appendChild(m);
+  back.addEventListener('click', (e) => { if (e.target === back) back.remove(); });
+  document.getElementById('modalRoot').appendChild(back);
+}
+
+function init() {
+  document.getElementById('btnBack').addEventListener('click', goBack);
+  document.getElementById('btnHome').addEventListener('click', () => { activeTab = 'registry'; registryView = 'home'; registryUnlocked = false; render(); });
+  document.getElementById('btnSwitch').addEventListener('click', () => { activeTab = 'registry'; registryView = 'browse'; registryUnlocked = false; render(); });
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => {
+    activeTab = t.dataset.tab;
+    if (activeTab === 'registry') { registryView = 'home'; registryUnlocked = false; }
+    render();
+  }));
+  document.getElementById('btnRemind').addEventListener('click', sendReminder);
+  document.getElementById('btnSettings').addEventListener('click', openSettings);
+  document.getElementById('btnCloudSave').addEventListener('click', () => cloudSave(false));
+  document.getElementById('btnExportSheet').addEventListener('click', exportSheetClick);
+  document.getElementById('btnCsv').addEventListener('click', exportCsv);
+  document.getElementById('btnPrint').addEventListener('click', () => window.print());
+  const fi = document.getElementById('fileInput');
+  fi.addEventListener('change', (e) => { if (e.target.files[0]) loadCase(e.target.files[0]); e.target.value = ''; });
+  window.addEventListener('beforeunload', (e) => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+  markClean();
+  render();
+}
+document.addEventListener('DOMContentLoaded', init);
+
+</script>
 </body>
 </html>
